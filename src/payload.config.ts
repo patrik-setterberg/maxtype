@@ -9,24 +9,26 @@ import sharp from 'sharp'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 
+import { Admins } from './collections/Admins'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
-    user: Users.slug,
+    user: Admins.slug,
     importMap: {
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Admins, Users, Media, Pages],
   editor: lexicalEditor(),
   email: nodemailerAdapter({
     defaultFromAddress: 'info@payloadcms.com',
-    defaultFromName: 'Payload',
+    defaultFromName: 'Maxtype',
     // Any Nodemailer transport can be used
     transport: nodemailer.createTransport({
       host: process.env.MAIL_HOST,
