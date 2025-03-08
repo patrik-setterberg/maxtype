@@ -10,10 +10,14 @@ import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 
+// Collections
 import { Admins } from './collections/Admins'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+
+// Globals
+import Header from './globals/header'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -26,9 +30,10 @@ export default buildConfig({
     },
   },
   collections: [Admins, Users, Media, Pages],
+  globals: [Header],
   editor: lexicalEditor(),
   email: nodemailerAdapter({
-    defaultFromAddress: 'info@payloadcms.com',
+    defaultFromAddress: 'info@maxtype.app',
     defaultFromName: 'Maxtype',
     // Any Nodemailer transport can be used
     transport: nodemailer.createTransport({
