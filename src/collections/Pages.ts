@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { Form } from '../blocks/Form'
+
 export const Pages: CollectionConfig = {
   slug: 'pages',
   labels: {
@@ -24,6 +26,11 @@ export const Pages: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
+    },
+    {
+      name: 'blocks',
+      type: 'blocks',
+      blocks: [Form],
     },
     // Add additional fields here as needed.
   ],

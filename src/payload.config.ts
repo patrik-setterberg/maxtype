@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import nodemailer from 'nodemailer'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 
 import { Admins } from './collections/Admins'
 import { Users } from './collections/Users'
@@ -49,6 +50,11 @@ export default buildConfig({
   sharp,
   plugins: [
     payloadCloudPlugin(),
+    formBuilderPlugin({
+      fields: {
+        payment: false,
+      },
+    }),
     // storage-adapter-placeholder
   ],
 })
