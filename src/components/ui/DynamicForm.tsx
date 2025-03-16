@@ -16,6 +16,7 @@ export interface FormData {
   createdAt: string
   updatedAt: string
   title: string
+  slug: string
   fields: FormField[]
   submitButtonLabel: string
   confirmationType: string
@@ -31,8 +32,8 @@ export interface FormProps {
 }
 
 const DynamicForm: React.FC<FormProps> = ({ form }) => {
-  switch (form.title) {
-    case 'Sign up':
+  switch (form.slug) {
+    case 'signup':
       return <SignupForm form={form} id={form.id} />
     default:
       return null

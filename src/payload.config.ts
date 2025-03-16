@@ -59,7 +59,19 @@ export default buildConfig({
       fields: {
         payment: false,
       },
+      formOverrides: {
+        fields: ({ defaultFields }) => [
+          {
+            name: 'slug',
+            type: 'text',
+            required: true,
+            unique: true,
+          },
+          ...defaultFields,
+        ],
+      },
     }),
+
     // storage-adapter-placeholder
   ],
 })

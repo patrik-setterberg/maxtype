@@ -263,6 +263,7 @@ export interface Page {
  */
 export interface Form {
   id: string;
+  slug: string;
   title: string;
   fields?:
     | (
@@ -616,6 +617,7 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "forms_select".
  */
 export interface FormsSelect<T extends boolean = true> {
+  slug?: T;
   title?: T;
   fields?:
     | T
