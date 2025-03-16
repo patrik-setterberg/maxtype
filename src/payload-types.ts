@@ -175,7 +175,7 @@ export interface User {
   preferences: {
     language: 'en' | 'es' | 'fr' | 'de' | 'sv';
     keyboardLayout: 'qwerty' | 'azerty' | 'dvorak';
-    testDuration: '30s' | '60s' | '120s';
+    testDuration: '30' | '60' | '120';
     showKeyboard: boolean;
   };
   updatedAt: string;

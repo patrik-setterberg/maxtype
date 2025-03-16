@@ -62,9 +62,9 @@ export const Users: CollectionConfig = {
           name: 'testDuration',
           type: 'select',
           options: [
-            { label: '30 seconds', value: '30s' },
-            { label: '60 seconds', value: '60s' },
-            { label: '120 seconds', value: '120s' },
+            { label: '30 seconds', value: '30' },
+            { label: '60 seconds', value: '60' },
+            { label: '120 seconds', value: '120' },
           ],
           required: true,
           defaultValue: '30s',
