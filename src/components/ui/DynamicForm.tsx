@@ -1,6 +1,7 @@
 import React from 'react'
 
 import SignupForm from './SignupForm'
+import LoginForm from './LoginForm'
 
 interface FormField {
   blockType: string
@@ -35,6 +36,8 @@ const DynamicForm: React.FC<FormProps> = ({ form }) => {
   switch (form.slug) {
     case 'signup':
       return <SignupForm form={form} id={form.id} />
+    case 'login':
+      return <LoginForm form={form} id={form.id} />
     default:
       return null
   }

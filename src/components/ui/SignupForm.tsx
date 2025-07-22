@@ -10,6 +10,8 @@ import { cn, checkEmailAvailable, checkUsernameAvailable } from '@/lib/utils'
 import { FormProps } from './DynamicForm'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Loader } from '@/components/ui/Loader'
+import { ErrorAlert } from '@/components/ui/ErrorAlert'
 
 import {
   Form,
@@ -21,10 +23,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-// TODO: LOADER
 const SignupForm: React.FC<FormProps> = ({ form }) => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const FormSchema = z
     .object(
@@ -92,6 +94,7 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
     async (data: z.infer<typeof FormSchema>) => {
       setError(null)
       setSuccess(false)
+      setLoading(true)
 
       const { username, email } = data
 
@@ -100,15 +103,23 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
 
         if (!isUsernameAvailable) {
           setError('Username is not available. Please choose a different username.')
+          theform.setError('username', {
+            type: 'manual',
+            message: 'Username is not available. Please choose a different username.',
+          })
+          setLoading(false)
           return
         }
 
         const isEmailAvailable = await checkEmailAvailable(email)
 
         if (!isEmailAvailable) {
-          setError(
-            'An account is already registered with that email address. LOGIN or RECOVER PASSWORD',
-          )
+          setError('An account is already registered with that email address.')
+          setLoading(false)
+          theform.setError('email', {
+            type: 'manual',
+            message: 'An account is already registered with that email address.',
+          })
           return
         }
 
@@ -127,6 +138,7 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
 
         if (!newUserReq.ok) {
           setError('An unexpected error occurred. Please try again later.')
+          setLoading(false)
           throw new Error('Failed to create user')
         }
 
@@ -147,18 +159,20 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
           }),
         })
 
+        setLoading(false)
         setSuccess(true)
       } catch (error) {
         console.error('Error:', error)
         setError('An unexpected error occurred. Please try again later.')
         setSuccess(false)
+        setLoading(false)
       }
     },
     [form],
   )
 
   return (
-    <section className={cn('max-w-md mx-auto')}>
+    <section className={cn('max-w-md mx-auto relative')}>
       {success ? (
         <>
           <h1>Success!</h1>
@@ -166,9 +180,11 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
         </>
       ) : (
         <>
-          <h1>Sign up</h1>
+          <h1 className={cn('text-2xl font-semibold mb-2')}>Create account</h1>
           <p>Fill out the form below to create an account.</p>
-          {error && <div>{error}</div>}
+          {error && (
+            <ErrorAlert error={'An error occurred. Review the fields below and try again.'} />
+          )}
           <Form {...theform}>
             <form onSubmit={theform.handleSubmit(signupOnSubmit)} className={cn('grid gap-4 mt-8')}>
               {form.fields.map((field) => {
@@ -180,7 +196,7 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
                       control={theform.control}
                       render={({ field: formField }) => (
                         <FormItem>
-                          <FormLabel>{field.label}</FormLabel>
+                          <FormLabel className={cn('text-foreground!')}>{field.label}</FormLabel>
                           <FormControl>
                             <Input
                               {...formField}
@@ -191,6 +207,7 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
                                     ? 'password'
                                     : 'text'
                               }
+                              className="rounded-sm"
                             />
                           </FormControl>
                           <FormMessage className="mt-0!" />
@@ -234,8 +251,11 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
                     />
                   )
               })}
-              <Button type="submit">{form.submitButtonLabel}</Button>
+              <Button type="submit" className={cn('cursor-pointer mt-4')}>
+                {form.submitButtonLabel}
+              </Button>
             </form>
+            <Loader show={loading} />
           </Form>
         </>
       )}
