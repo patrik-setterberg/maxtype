@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { cn, checkEmailAvailable, checkUsernameAvailable } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 import { FormProps } from './DynamicForm'
 import { Button } from '@/components/ui/Button'
@@ -99,65 +99,46 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
       const { username, email } = data
 
       try {
-        const isUsernameAvailable = await checkUsernameAvailable(username)
-
-        if (!isUsernameAvailable) {
-          setError('Username is not available. Please choose a different username.')
-          theform.setError('username', {
-            type: 'manual',
-            message: 'Username is not available. Please choose a different username.',
-          })
-          setLoading(false)
-          return
-        }
-
-        const isEmailAvailable = await checkEmailAvailable(email)
-
-        if (!isEmailAvailable) {
-          setError('An account is already registered with that email address.')
-          setLoading(false)
-          theform.setError('email', {
-            type: 'manual',
-            message: 'An account is already registered with that email address.',
-          })
-          return
-        }
-
-        // Create new user
-        const newUserReq = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/create-user`, {
+        // Use PayloadCMS built-in user creation endpoint
+        const newUserReq = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/users`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
             username: data.username,
             email: data.email,
             password: data.password,
+            preferences: {
+              language: 'en',
+              keyboardLayout: 'qwerty',
+              testDuration: '30',
+              showKeyboard: true,
+            },
           }),
         })
+
+        const response = await newUserReq.json()
 
         if (!newUserReq.ok) {
-          setError('An unexpected error occurred. Please try again later.')
+          // Handle PayloadCMS validation errors
+          if (response.errors && Array.isArray(response.errors)) {
+            response.errors.forEach((error: any) => {
+              if (error.field) {
+                theform.setError(error.field, {
+                  type: 'manual',
+                  message: error.message,
+                })
+              }
+            })
+            setError('Please check the fields below and try again.')
+          } else {
+            setError(response.message || 'An error occurred during signup.')
+          }
           setLoading(false)
-          throw new Error('Failed to create user')
+          return
         }
-
-        // Create form submission
-        const formSubmissionData = Object.entries(data).map(([name, value]) => ({
-          field: name,
-          value,
-        }))
-
-        await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/form-submissions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            form: form,
-            submissionData: formSubmissionData,
-          }),
-        })
 
         setLoading(false)
         setSuccess(true)
@@ -168,7 +149,7 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
         setLoading(false)
       }
     },
-    [form],
+    [],
   )
 
   return (

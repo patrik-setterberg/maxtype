@@ -4,7 +4,6 @@ import React, { useCallback, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import bcrypt from 'bcryptjs'
 
 import { cn } from '@/lib/utils'
 
@@ -77,63 +76,52 @@ const LoginForm: React.FC<FormProps> = ({ form }) => {
       setSuccess(false)
       setLoading(true)
 
-      const { email } = data
-
       try {
-        // Create new user
-        const newUserReq = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/create-user`, {
+        // Use PayloadCMS built-in login endpoint
+        const loginReq = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/users/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include', // Important: includes cookies in request
           body: JSON.stringify({
-            username: data.username,
             email: data.email,
             password: data.password,
           }),
         })
 
-        if (!newUserReq.ok) {
-          setError('An unexpected error occurred. Please try again later.')
+        const loginResponse = await loginReq.json()
+
+        if (!loginReq.ok) {
+          setError(loginResponse.message || 'Login failed. Please check your credentials.')
           setLoading(false)
-          throw new Error('Failed to create user')
+          return
         }
-
-        // Create form submission
-        const formSubmissionData = Object.entries(data).map(([name, value]) => ({
-          field: name,
-          value,
-        }))
-
-        await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/form-submissions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            form: form,
-            submissionData: formSubmissionData,
-          }),
-        })
 
         setLoading(false)
         setSuccess(true)
+        
+        // PayloadCMS automatically sets HTTP-only cookies
+        // Redirect to main app after successful login
+        setTimeout(() => {
+          window.location.href = '/'
+        }, 2000)
       } catch (error) {
-        console.error('Error:', error)
+        console.error('Login error:', error)
         setError('An unexpected error occurred. Please try again later.')
         setSuccess(false)
         setLoading(false)
       }
     },
-    [form],
+    [],
   )
 
   return (
     <section className={cn('max-w-md mx-auto relative')}>
       {success ? (
         <>
-          <h1>Success!</h1>
-          <p>Thanks for signing up. Proceed to LOGIN PAGE to login.</p>
+          <h1>Login Successful!</h1>
+          <p>Welcome back! You are now logged in.</p>
         </>
       ) : (
         <>
@@ -179,6 +167,17 @@ const LoginForm: React.FC<FormProps> = ({ form }) => {
             </form>
             <Loader show={loading} />
           </Form>
+          <div className={cn('text-center mt-6')}>
+            <p className="text-sm text-muted-foreground">
+              Don't have an account?{' '}
+              <a 
+                href="/signup" 
+                className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+              >
+                Sign up here
+              </a>
+            </p>
+          </div>
         </>
       )}
     </section>

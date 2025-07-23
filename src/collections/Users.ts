@@ -5,7 +5,28 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'username',
   },
-  auth: true,
+  auth: {
+    maxLoginAttempts: 5,        // Lock account after 5 failed login attempts
+    lockTime: 15 * 60 * 1000,   // Unlock after 15 minutes (in milliseconds)
+  },
+  access: {
+    // Allow public user creation (signup)
+    create: () => true,
+    // Only allow users to read their own data or admins to read all
+    read: ({ req: { user } }) => {
+      if (user?.collection === 'admins') return true
+      if (user?.collection === 'users') return { id: { equals: user.id } }
+      return false
+    },
+    // Users can update their own data, admins can update all
+    update: ({ req: { user } }) => {
+      if (user?.collection === 'admins') return true
+      if (user?.collection === 'users') return { id: { equals: user.id } }
+      return false
+    },
+    // Only admins can delete users
+    delete: ({ req: { user } }) => user?.collection === 'admins',
+  },
   fields: [
     // Email added by default
     {
@@ -67,7 +88,7 @@ export const Users: CollectionConfig = {
             { label: '120 seconds', value: '120' },
           ],
           required: true,
-          defaultValue: '30s',
+          defaultValue: '30',
         },
         {
           name: 'showKeyboard',
