@@ -3,6 +3,7 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
+import { CircleUserRound, Settings } from 'lucide-react'
 
 const Header: React.FC = () => {
   const { user, loading, logout, isAuthenticated } = useAuth()
@@ -33,7 +34,7 @@ const Header: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        <nav className={cn('flex items-center space-x-6 ml-auto')}>
+        <nav className={cn('flex items-center space-x-4 ml-auto')}>
           {loading ? (
             // Show loading state
             <div className={cn('text-sm text-muted-foreground')}>Loading...</div>
@@ -44,10 +45,21 @@ const Header: React.FC = () => {
               <a
                 href="/profile"
                 className={cn(
-                  'text-sm font-medium text-muted-foreground hover:text-foreground transition-colors',
+                  'flex items-center text-muted-foreground hover:text-foreground transition-colors',
                 )}
+                title="Profile"
               >
-                Profile
+                <CircleUserRound size={20} />
+              </a>
+              {/* Settings available to all users */}
+              <a
+                href="/settings"
+                className={cn(
+                  'flex items-center text-muted-foreground hover:text-foreground transition-colors',
+                )}
+                title="Settings"
+              >
+                <Settings size={20} />
               </a>
               <button
                 onClick={logout}
@@ -61,6 +73,16 @@ const Header: React.FC = () => {
           ) : (
             // Logged out user navigation
             <>
+              {/* Settings available to all users */}
+              <a
+                href="/settings"
+                className={cn(
+                  'flex items-center text-muted-foreground hover:text-foreground transition-colors',
+                )}
+                title="Settings"
+              >
+                <Settings size={20} />
+              </a>
               <a
                 href="/login"
                 className={cn(
