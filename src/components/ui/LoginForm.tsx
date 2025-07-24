@@ -3,9 +3,9 @@
 import React, { useCallback, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
 import { cn } from '@/lib/utils'
+import { LoginSchema, type LoginFormData } from '@/lib/validation'
 
 import { FormProps } from './DynamicForm'
 import { Button } from '@/components/ui/Button'
@@ -27,51 +27,19 @@ const LoginForm: React.FC<FormProps> = ({ form }) => {
   const [success, setSuccess] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const FormSchema = z.object(
-    form.fields.reduce(
-      (schema, field) => {
-        let fieldSchema: z.ZodTypeAny
+  // Use our tested validation schema instead of dynamic generation
+  const defaultVals: LoginFormData = {
+    email: '',
+    password: '',
+  }
 
-        if (field.name === 'email') {
-          fieldSchema = z
-            .string({
-              required_error: `${field.label} is required.`,
-            })
-            .email({ message: 'Invalid email address.' })
-        } else if (field.name === 'password') {
-          fieldSchema = z
-            .string({
-              required_error: `${field.label} is required.`,
-            })
-            .min(6, { message: `${field.label} must be at least 6 characters.` })
-            .max(50, { message: `${field.label} must be at most 50 characters.` })
-        } else {
-          fieldSchema = z.string()
-        }
-
-        schema[field.name] = fieldSchema
-
-        return schema
-      },
-      {} as Record<string, z.ZodTypeAny>,
-    ),
-  )
-
-  const defaultVals = form.fields.reduce(
-    (values, field) => {
-      values[field.name] = ''
-      return values
-    },
-    {} as Record<string, string>,
-  )
-
-  const theform = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const theform = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema),
     defaultValues: defaultVals,
   })
 
   const loginOnSubmit = useCallback(
-    async (data: z.infer<typeof FormSchema>) => {
+    async (data: LoginFormData) => {
       setError(null)
       setSuccess(false)
       setLoading(true)
@@ -132,37 +100,48 @@ const LoginForm: React.FC<FormProps> = ({ form }) => {
           )}
           <Form {...theform}>
             <form onSubmit={theform.handleSubmit(loginOnSubmit)} className={cn('grid gap-4 mt-8')}>
-              {form.fields.map((field) => {
-                if (['text', 'email'].includes(field.blockType))
-                  return (
-                    <FormField
-                      key={field.id}
-                      name={field.name}
-                      control={theform.control}
-                      render={({ field: formField }) => (
-                        <FormItem>
-                          <FormLabel className={cn('text-foreground!')}>{field.label}</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...formField}
-                              type={
-                                field.blockType === 'email'
-                                  ? 'email'
-                                  : field.name === 'password'
-                                    ? 'password'
-                                    : 'text'
-                              }
-                              className="rounded-sm"
-                            />
-                          </FormControl>
-                          <FormMessage className="mt-0!" />
-                        </FormItem>
-                      )}
-                    />
-                  )
-              })}
+              {/* Email Field */}
+              <FormField
+                name="email"
+                control={theform.control}
+                render={({ field: formField }) => (
+                  <FormItem>
+                    <FormLabel className={cn('text-foreground!')}>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...formField}
+                        type="email"
+                        className="rounded-sm"
+                        placeholder="Enter your email"
+                      />
+                    </FormControl>
+                    <FormMessage className="mt-0!" />
+                  </FormItem>
+                )}
+              />
+
+              {/* Password Field */}
+              <FormField
+                name="password"
+                control={theform.control}
+                render={({ field: formField }) => (
+                  <FormItem>
+                    <FormLabel className={cn('text-foreground!')}>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...formField}
+                        type="password"
+                        className="rounded-sm"
+                        placeholder="Enter your password"
+                      />
+                    </FormControl>
+                    <FormMessage className="mt-0!" />
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" className={cn('cursor-pointer mt-4')}>
-                {form.submitButtonLabel}
+                Log In
               </Button>
             </form>
             <Loader show={loading} />
