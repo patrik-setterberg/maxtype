@@ -3,11 +3,11 @@
 import React, { useCallback, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 import { LoginSchema, type LoginFormData } from '@/lib/validation'
 
-import { FormProps } from './DynamicForm'
 import { Button } from '@/components/ui/Button'
 import { Loader } from '@/components/ui/Loader'
 import { ErrorAlert } from '@/components/ui/ErrorAlert'
@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-const LoginForm: React.FC<FormProps> = ({ form }) => {
+const LoginForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -148,13 +148,13 @@ const LoginForm: React.FC<FormProps> = ({ form }) => {
           </Form>
           <div className={cn('text-center mt-6')}>
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <a 
+              Don&apos;t have an account?{' '}
+              <Link 
                 href="/signup" 
                 className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
               >
                 Sign up here
-              </a>
+              </Link>
             </p>
           </div>
         </>

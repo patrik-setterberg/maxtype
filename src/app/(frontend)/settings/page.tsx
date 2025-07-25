@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import { Settings } from 'lucide-react'
@@ -41,8 +42,8 @@ export default function SettingsPage() {
         {!isAuthenticated && (
           <div className={cn('bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6')}>
             <p className={cn('text-sm text-yellow-800 dark:text-yellow-200')}>
-              <strong>Note:</strong> You're not logged in. Changes will be stored locally and won't sync across devices.{' '}
-              <a href="/login" className={cn('underline hover:no-underline')}>Log in</a> to save your preferences.
+              <strong>Note:</strong> You&apos;re not logged in. Changes will be stored locally and won&apos;t sync across devices.{' '}
+              <Link href="/login" className={cn('underline hover:no-underline')}>Log in</Link> to save your preferences.
             </p>
           </div>
         )}

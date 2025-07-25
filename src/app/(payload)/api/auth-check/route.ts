@@ -14,7 +14,7 @@ export const GET = async (req: NextRequest) => {
     })
 
     // This automatically checks the HTTP-only cookie
-    const { user } = await payload.auth({ req })
+    const { user } = await payload.auth({ headers: req.headers })
 
     if (user) {
       const typedUser = user as User

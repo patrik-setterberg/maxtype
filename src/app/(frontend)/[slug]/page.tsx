@@ -1,8 +1,9 @@
 import { getPayload } from 'payload'
+import { notFound } from 'next/navigation'
 import config from '@payload-config'
 
 // Components
-import DynamicForm, { FormProps } from '@/components/ui/DynamicForm'
+import BlockRenderer from '@/components/ui/BlockRenderer'
 
 type Args = {
   params: Promise<{ slug?: string }>
@@ -10,6 +11,11 @@ type Args = {
 
 const Page = async ({ params: paramsPromise }: Args) => {
   const { slug } = await paramsPromise
+
+  // Handle missing slug
+  if (!slug) {
+    notFound()
+  }
 
   const payload = await getPayload({ config })
   const result = await payload.find({
@@ -19,21 +25,22 @@ const Page = async ({ params: paramsPromise }: Args) => {
         equals: slug,
       },
     },
+    limit: 1
   })
 
-  const doc = result.docs[0]
+  // Handle no results
+  if (!result.docs.length) {
+    notFound()
+  }
+
+  const page = result.docs[0]
 
   return (
     <div>
-      {/* <h1>{slug}</h1> */} {/* Kanske en show title checkbox? */}
-      {doc?.blocks?.map((block, index) => {
-        switch (block.blockType) {
-          case 'formBlock':
-            return <DynamicForm key={index} {...(block as FormProps)} />
-          default:
-            return null
-        }
-      })}
+      {page.title && <h1>{page.title}</h1>}
+      {page.blocks?.map((block, index) => (
+        <BlockRenderer key={block.id || index} block={block} />
+      ))}
     </div>
   )
 }

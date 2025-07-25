@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 export default function AboutPage() {
@@ -19,7 +20,7 @@ export default function AboutPage() {
             <h2 className={cn('text-2xl font-semibold mb-4')}>What is MaxType?</h2>
             <p className={cn('text-muted-foreground leading-relaxed')}>
               MaxType is a modern typing test application designed to help you improve your typing speed 
-              and accuracy. Whether you're a beginner looking to learn touch typing or an experienced 
+              and accuracy. Whether you&apos;re a beginner looking to learn touch typing or an experienced 
               typist aiming to reach new speeds, MaxType provides the tools and practice you need.
             </p>
           </section>
@@ -53,18 +54,18 @@ export default function AboutPage() {
               or create an account to save your progress and customize your experience.
             </p>
             <div className={cn('flex gap-4')}>
-              <a 
+              <Link 
                 href="/" 
                 className={cn('inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 transition-colors')}
               >
                 Start Typing Test
-              </a>
-              <a 
+              </Link>
+              <Link 
                 href="/signup" 
                 className={cn('inline-flex items-center justify-center rounded-md text-sm font-medium border border-primary text-primary hover:bg-primary hover:text-primary-foreground h-10 px-6 py-2 transition-colors')}
               >
                 Create Account
-              </a>
+              </Link>
             </div>
           </section>
         </div>

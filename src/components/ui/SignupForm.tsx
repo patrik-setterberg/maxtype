@@ -3,11 +3,11 @@
 import React, { useCallback, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
 import { SignupSchema, type SignupFormData } from '@/lib/validation'
 
-import { FormProps } from './DynamicForm'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Loader } from '@/components/ui/Loader'
@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
-const SignupForm: React.FC<FormProps> = ({ form }) => {
+const SignupForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
@@ -48,7 +48,8 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
       setSuccess(false)
       setLoading(true)
 
-      const { username, email } = data
+      // Destructure for future use if needed
+      // const { username, email } = data
 
       try {
         // Use PayloadCMS built-in user creation endpoint
@@ -76,9 +77,9 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
         if (!newUserReq.ok) {
           // Handle PayloadCMS validation errors
           if (response.errors && Array.isArray(response.errors)) {
-            response.errors.forEach((error: any) => {
-              if (error.field) {
-                theform.setError(error.field, {
+            response.errors.forEach((error: { field?: string; message: string }) => {
+              if (error.field && error.field in theform.getValues()) {
+                theform.setError(error.field as keyof SignupFormData, {
                   type: 'manual',
                   message: error.message,
                 })
@@ -101,7 +102,7 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
         setLoading(false)
       }
     },
-    [],
+    [theform],
   )
 
   return (
@@ -207,12 +208,14 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
                 render={({ field: formField, fieldState: { error } }) => (
                   <FormItem className="items-top flex flex-wrap space-x-2">
                     <Checkbox
-                      {...formField}
                       checked={formField.value === true}
                       onCheckedChange={(checked) => formField.onChange(checked)}
                       className="cursor-pointer"
                       id="privacy-policy-consent"
                       aria-invalid={!!error}
+                      name={formField.name}
+                      onBlur={formField.onBlur}
+                      ref={formField.ref}
                     />
                     <div className="grid gap-1.5 leading-none">
                       <label
@@ -223,9 +226,9 @@ const SignupForm: React.FC<FormProps> = ({ form }) => {
                       </label>
                       <p className="text-sm text-muted-foreground">
                         Read the{' '}
-                        <a className="underline underline-offset-2" href="/privacy">
+                        <Link className="underline underline-offset-2" href="/privacy">
                           privacy policy
-                        </a>
+                        </Link>
                       </p>
                     </div>
                     <FormMessage className="basis-full mt-0!" />

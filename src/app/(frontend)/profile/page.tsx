@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import { CircleUserRound } from 'lucide-react'
@@ -26,12 +27,12 @@ export default function ProfilePage() {
           <p className={cn('text-muted-foreground mb-6')}>
             You need to be logged in to view your profile.
           </p>
-          <a 
+          <Link 
             href="/login" 
             className={cn('inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors')}
           >
             Log In
-          </a>
+          </Link>
         </div>
       </div>
     )

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 const Footer: React.FC = () => {
@@ -29,18 +30,18 @@ const Footer: React.FC = () => {
 
         {/* Right side - Links */}
         <div className={cn('flex items-center space-x-6')}>
-          <a
+          <Link
             href="/about"
             className={cn('text-sm text-muted-foreground hover:text-foreground transition-colors')}
           >
             About
-          </a>
-          <a
+          </Link>
+          <Link
             href="/privacy"
             className={cn('text-sm text-muted-foreground hover:text-foreground transition-colors')}
           >
             Privacy
-          </a>
+          </Link>
           <span className={cn('text-sm text-muted-foreground')}>© 2024 MaxType</span>
         </div>
       </div>
