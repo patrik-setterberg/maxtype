@@ -174,7 +174,7 @@ export interface User {
   username: string;
   preferences: {
     language: 'en' | 'es' | 'fr' | 'de' | 'sv';
-    keyboardLayout: 'qwerty' | 'azerty' | 'dvorak';
+    keyboardLayout: 'qwerty' | 'azerty' | 'dvorak' | 'colemak';
     testDuration: '30' | '60' | '120';
     showKeyboard: boolean;
   };

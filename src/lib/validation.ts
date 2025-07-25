@@ -57,6 +57,30 @@ export const SignupSchema = z
     path: ['password-repeat'],
   })
 
+/**
+ * User preferences validation schema
+ * Used for validating both localStorage and API preference updates
+ */
+export const PreferenceSchema = z.object({
+  language: z.enum(['en', 'es', 'fr', 'de', 'sv'], {
+    required_error: 'Language is required.',
+    invalid_type_error: 'Invalid language selection.',
+  }),
+  keyboardLayout: z.enum(['qwerty', 'azerty', 'dvorak', 'colemak'], {
+    required_error: 'Keyboard layout is required.',
+    invalid_type_error: 'Invalid keyboard layout selection.',
+  }),
+  testDuration: z.enum(['30', '60', '120'], {
+    required_error: 'Test duration is required.',
+    invalid_type_error: 'Invalid test duration selection.',
+  }),
+  showKeyboard: z.boolean({
+    required_error: 'Show keyboard preference is required.',
+    invalid_type_error: 'Show keyboard must be a boolean value.',
+  }),
+}).strict() // Prevent additional properties
+
 // Type exports for TypeScript
 export type LoginFormData = z.infer<typeof LoginSchema>
 export type SignupFormData = z.infer<typeof SignupSchema>
+export type UserPreferences = z.infer<typeof PreferenceSchema>

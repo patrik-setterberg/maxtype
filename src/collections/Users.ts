@@ -75,6 +75,7 @@ export const Users: CollectionConfig = {
             { label: 'QWERTY', value: 'qwerty' },
             { label: 'AZERTY', value: 'azerty' },
             { label: 'DVORAK', value: 'dvorak' },
+            { label: 'COLEMAK', value: 'colemak' },
           ],
           required: true,
           defaultValue: 'qwerty',
