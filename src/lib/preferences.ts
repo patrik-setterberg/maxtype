@@ -105,8 +105,9 @@ export class PreferenceStorage {
  */
 export function usePreferences() {
   const { user, loading: authLoading } = useAuth()
-  const [preferences, setPreferences] = useState<UserPreferences>(DEFAULT_PREFERENCES)
+  const [preferences, setPreferences] = useState<UserPreferences | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
+  const [initialized, setInitialized] = useState<boolean>(false)
   const isGuest = !user
 
   // Initialize preferences when auth state is determined
@@ -131,6 +132,8 @@ export function usePreferences() {
       const storedPreferences = PreferenceStorage.loadFromLocalStorage()
       setPreferences(storedPreferences || DEFAULT_PREFERENCES)
     }
+    
+    setInitialized(true)
   }, [user, authLoading])
 
   /**
@@ -141,7 +144,7 @@ export function usePreferences() {
       setLoading(true)
       
       // Update user preferences in database
-      const response = await fetch(`/api/users/${authenticatedUser.id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL || ''}/api/users/${authenticatedUser.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -185,8 +188,8 @@ export function usePreferences() {
       setLoading(true)
 
       if (user) {
-        // Authenticated user - update via API
-        const response = await fetch(`/api/users/${user.id}`, {
+        // Authenticated user - update via PayloadCMS API using standard REST endpoint
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL || ''}/api/users/${user.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -201,7 +204,11 @@ export function usePreferences() {
           throw new Error(`Failed to update preferences: ${response.status}`)
         }
 
-        const { doc: updatedUser } = await response.json()
+        const responseData = await response.json()
+        
+        // PayloadCMS might return the user directly or wrapped in { doc }
+        const updatedUser = responseData.doc || responseData
+        
         setPreferences(updatedUser.preferences)
       } else {
         // Guest user - save to localStorage
@@ -224,9 +231,10 @@ export function usePreferences() {
   }, [updatePreferences])
 
   return {
-    preferences,
+    preferences: preferences || DEFAULT_PREFERENCES,
     isGuest,
     loading: authLoading || loading,
+    initialized,
     updatePreferences,
     resetPreferences,
     defaults: DEFAULT_PREFERENCES,
