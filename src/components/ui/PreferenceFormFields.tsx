@@ -17,13 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from './form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select'
 
 const LANGUAGE_OPTIONS = [
   { value: 'en', label: 'English', flag: '🇺🇸' },
@@ -53,7 +47,12 @@ interface PreferenceFormFieldsProps {
   isLoading: boolean
 }
 
-export function PreferenceFormFields({ preferences, onSubmit, onReset, isLoading }: PreferenceFormFieldsProps) {
+export function PreferenceFormFields({
+  preferences,
+  onSubmit,
+  onReset,
+  isLoading,
+}: PreferenceFormFieldsProps) {
   const form = useForm<UserPreferences>({
     resolver: zodResolver(PreferenceSchema),
     defaultValues: preferences,
@@ -70,14 +69,14 @@ export function PreferenceFormFields({ preferences, onSubmit, onReset, isLoading
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         {/* Language Selection */}
         <FormField
           control={form.control}
           name="language"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2">
+            <FormItem className="rounded-lg border p-4">
+              <FormLabel className="flex items-center gap-2 text-base">
                 <Globe className="h-4 w-4" />
                 Language
               </FormLabel>
@@ -106,50 +105,13 @@ export function PreferenceFormFields({ preferences, onSubmit, onReset, isLoading
           )}
         />
 
-        {/* Keyboard Layout Selection */}
-        <FormField
-          control={form.control}
-          name="keyboardLayout"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2">
-                <Keyboard className="h-4 w-4" />
-                Keyboard Layout
-              </FormLabel>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a keyboard layout" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {KEYBOARD_LAYOUT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      <div className="flex flex-col items-start">
-                        <span className="font-medium">{option.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {option.description}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                Select the keyboard layout that matches your physical keyboard.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {/* Test Duration Selection */}
         <FormField
           control={form.control}
           name="testDuration"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2">
+            <FormItem className="rounded-lg border p-4">
+              <FormLabel className="flex items-center gap-2 text-base">
                 <Clock className="h-4 w-4" />
                 Test Duration
               </FormLabel>
@@ -164,45 +126,82 @@ export function PreferenceFormFields({ preferences, onSubmit, onReset, isLoading
                     <SelectItem key={option.value} value={option.value}>
                       <div className="flex flex-col items-start">
                         <span className="font-medium">{option.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {option.description}
-                        </span>
+                        <span className="text-xs text-muted-foreground">{option.description}</span>
                       </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <FormDescription>
-                Choose how long each typing test should last.
-              </FormDescription>
+              <FormDescription>Choose how long each typing test should last.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Show Keyboard Toggle */}
+        {/* Show Keyboard Toggle with Keyboard Layout */}
         <FormField
           control={form.control}
           name="showKeyboard"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="flex items-center gap-2 text-base">
-                  <Eye className="h-4 w-4" />
-                  Show Virtual Keyboard
-                </FormLabel>
-                <FormDescription>
-                  Display a visual keyboard during typing tests to help with key positioning.
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isLoading}
+            <div className="rounded-lg border p-4 space-y-4">
+              <FormItem className="flex flex-row items-center justify-between">
+                <div className="space-y-0.5">
+                  <FormLabel className="flex items-center gap-2 text-base">
+                    <Eye className="h-4 w-4" />
+                    Show Virtual Keyboard
+                  </FormLabel>
+                  <FormDescription>
+                    Display a visual keyboard during typing tests to help with key positioning.
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isLoading}
+                  />
+                </FormControl>
+              </FormItem>
+
+              {/* Keyboard Layout Selection - only shown when virtual keyboard is enabled */}
+              {field.value && (
+                <FormField
+                  control={form.control}
+                  name="keyboardLayout"
+                  render={({ field: layoutField }) => (
+                    <FormItem className="pt-4 border-t border-border/50">
+                      <FormLabel className="flex items-center gap-2">
+                        <Keyboard className="h-4 w-4" />
+                        Keyboard Layout
+                      </FormLabel>
+                      <Select onValueChange={layoutField.onChange} value={layoutField.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a keyboard layout" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {KEYBOARD_LAYOUT_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium">{option.label}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {option.description}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Select the keyboard layout that matches your physical keyboard.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </FormControl>
-            </FormItem>
+              )}
+            </div>
           )}
         />
 
@@ -220,7 +219,7 @@ export function PreferenceFormFields({ preferences, onSubmit, onReset, isLoading
             )}
             Save Preferences
           </Button>
-          
+
           <Button
             type="button"
             variant="outline"
@@ -239,9 +238,7 @@ export function PreferenceFormFields({ preferences, onSubmit, onReset, isLoading
 
         {/* Form Status */}
         {form.formState.isDirty && !isLoading && (
-          <p className="text-sm text-muted-foreground">
-            You have unsaved changes.
-          </p>
+          <p className="text-sm text-muted-foreground">You have unsaved changes.</p>
         )}
       </form>
     </Form>

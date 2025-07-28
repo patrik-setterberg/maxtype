@@ -42,7 +42,9 @@ const Footer: React.FC = () => {
           >
             Privacy
           </Link>
-          <span className={cn('text-sm text-muted-foreground')}>© 2024 MaxType</span>
+          <span className={cn('text-sm text-muted-foreground')}>
+            © {new Date().getFullYear()} MaxType
+          </span>
         </div>
       </div>
     </footer>

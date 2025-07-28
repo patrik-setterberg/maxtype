@@ -42,7 +42,9 @@ const Header: React.FC = () => {
           ) : isAuthenticated ? (
             // Logged in user navigation
             <>
-              <span className={cn('text-sm text-muted-foreground')}>Welcome, {user?.username}</span>
+              <span className={cn('text-sm hidden md:flex text-muted-foreground')}>
+                Welcome, {user?.username}
+              </span>
               <Link
                 href="/profile"
                 className={cn(
