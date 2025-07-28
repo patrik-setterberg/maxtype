@@ -3,14 +3,14 @@ import { z } from 'zod'
 /**
  * Login form validation schema
  * Used by LoginForm component
- * Username-only login
+ * Supports both username and email login
  */
 export const LoginSchema = z.object({
   username: z
     .string({
-      required_error: 'Username is required.',
+      required_error: 'Username or email is required.',
     })
-    .min(1, { message: 'Username is required.' }),
+    .min(1, { message: 'Username or email is required.' }),
   password: z
     .string({
       required_error: 'Password is required.',
@@ -81,7 +81,44 @@ export const PreferenceSchema = z.object({
   }),
 }).strict() // Prevent additional properties
 
+/**
+ * Forgot password form validation schema
+ * Used by ForgotPasswordForm component
+ * Supports both username and email for password reset
+ */
+export const ForgotPasswordSchema = z.object({
+  usernameOrEmail: z
+    .string({
+      required_error: 'Username or email is required.',
+    })
+    .min(1, { message: 'Username or email is required.' }),
+})
+
+/**
+ * Reset password form validation schema
+ * Used by ResetPasswordForm component
+ */
+export const ResetPasswordSchema = z
+  .object({
+    password: z
+      .string({
+        required_error: 'Password is required.',
+      })
+      .min(6, { message: 'Password must be at least 6 characters.' })
+      .max(50, { message: 'Password must be at most 50 characters.' }),
+    'password-repeat': z
+      .string({
+        required_error: 'Password confirmation is required.',
+      }),
+  })
+  .refine((data) => data.password === data['password-repeat'], {
+    message: 'Passwords do not match',
+    path: ['password-repeat'],
+  })
+
 // Type exports for TypeScript
 export type LoginFormData = z.infer<typeof LoginSchema>
 export type SignupFormData = z.infer<typeof SignupSchema>
 export type UserPreferences = z.infer<typeof PreferenceSchema>
+export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordSchema>
+export type ResetPasswordFormData = z.infer<typeof ResetPasswordSchema>

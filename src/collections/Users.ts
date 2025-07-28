@@ -8,9 +8,172 @@ export const Users: CollectionConfig = {
   auth: {
     maxLoginAttempts: 5,        // Lock account after 5 failed login attempts
     lockTime: 15 * 60 * 1000,   // Unlock after 15 minutes (in milliseconds)
-    loginWithUsername: true,    // Allow login with username or email
+    loginWithUsername: {
+      allowEmailLogin: true,    // Allow login with both username AND email
+      requireEmail: false,      // Email is not required (default: false)
+    },
+    forgotPassword: {
+      expiration: 3600000, // 1 hour in milliseconds
+      generateEmailHTML: (args) => {
+        const { token } = args || {}
+        // Create reset password URL - adjust this to match your frontend URL
+        const url = `${process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'}/reset-password?token=${token}`
+        
+        return `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Reset Your Password - MaxType</title>
+              <style>
+                * { box-sizing: border-box; }
+                body { 
+                  font-family: system-ui, -apple-system, sans-serif; 
+                  line-height: 1.6; 
+                  color: #262626; 
+                  background: #ffffff;
+                  margin: 0;
+                  padding: 0;
+                }
+                .container { 
+                  max-width: 600px; 
+                  margin: 0 auto; 
+                  background: #ffffff;
+                }
+                .header { 
+                  background: #262626; 
+                  color: #ffffff; 
+                  padding: 32px 24px; 
+                  text-align: center; 
+                  border-radius: 10px 10px 0 0; 
+                }
+                .header h1 { 
+                  margin: 0; 
+                  font-size: 24px; 
+                  font-weight: 600; 
+                  letter-spacing: -0.025em;
+                }
+                .content { 
+                  background: #ffffff; 
+                  padding: 32px 24px; 
+                  border: 1px solid #e5e5e5;
+                  border-top: none;
+                  border-radius: 0 0 10px 10px; 
+                }
+                .content h2 { 
+                  color: #171717; 
+                  font-size: 20px; 
+                  font-weight: 600; 
+                  margin: 0 0 16px 0; 
+                }
+                .content p { 
+                  color: #525252; 
+                  margin: 0 0 16px 0; 
+                }
+                .button-container { 
+                  text-align: center; 
+                  margin: 24px 0; 
+                }
+                .button { 
+                  display: inline-block; 
+                  background: #262626; 
+                  color: #ffffff; 
+                  padding: 12px 24px; 
+                  text-decoration: none; 
+                  border-radius: 10px; 
+                  font-weight: 500;
+                  transition: background-color 0.2s;
+                }
+                .button:hover { 
+                  background: #404040; 
+                }
+                .code-block { 
+                  word-break: break-all; 
+                  background: #f5f5f5; 
+                  border: 1px solid #e5e5e5;
+                  padding: 12px; 
+                  border-radius: 6px; 
+                  font-family: 'Roboto Mono', monospace; 
+                  font-size: 14px;
+                  color: #171717;
+                  margin: 16px 0;
+                }
+                .divider {
+                  height: 1px;
+                  background: #e5e5e5;
+                  margin: 24px 0;
+                }
+                .footer { 
+                  color: #737373; 
+                  font-size: 14px; 
+                }
+                .footer p { 
+                  color: #737373; 
+                }
+                .logo {
+                  font-family: 'Roboto Mono', monospace;
+                  font-weight: 700;
+                  letter-spacing: -0.05em;
+                }
+                
+                /* Dark mode support */
+                @media (prefers-color-scheme: dark) {
+                  body { background: #0a0a0a; color: #e5e5e5; }
+                  .container { background: #0a0a0a; }
+                  .content { 
+                    background: #171717; 
+                    border-color: #262626; 
+                  }
+                  .content h2 { color: #ffffff; }
+                  .content p { color: #a3a3a3; }
+                  .code-block { 
+                    background: #262626; 
+                    border-color: #404040; 
+                    color: #e5e5e5; 
+                  }
+                  .divider { background: #404040; }
+                  .footer p { color: #737373; }
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1 class="logo">MaxType</h1>
+                </div>
+                <div class="content">
+                  <h2>Reset Your Password</h2>
+                  <p>We received a request to reset your password for your MaxType account.</p>
+                  <p>If you requested this password reset, click the button below to create a new password:</p>
+                  
+                  <div class="button-container">
+                    <a href="${url}" class="button">Reset Password</a>
+                  </div>
+                  
+                  <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+                  <div class="code-block">${url}</div>
+                  
+                  <div class="divider"></div>
+                  
+                  <div class="footer">
+                    <p><strong>Security note:</strong> This password reset link will expire in 1 hour.</p>
+                    <p>If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.</p>
+                    <p>Keep improving your typing skills!<br><strong>The MaxType Team</strong></p>
+                  </div>
+                </div>
+              </div>
+            </body>
+          </html>
+        `
+      },
+      generateEmailSubject: () => {
+        return 'Reset your MaxType password'
+      }
+    },
     verify: {
-      generateEmailHTML: ({ token }) => {
+      generateEmailHTML: (args) => {
+        const { token } = args || {}
         // Create verification URL - adjust this to match your frontend URL
         const url = `${process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'}/verify-email?token=${token}`
         

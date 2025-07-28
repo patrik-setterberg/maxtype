@@ -19,4 +19,30 @@
 - The user wants to learn. Be sure to explain everything you do, and why. For complicated pieces of code, be very detailed.
 - For web searches, remember that it is currently the year 2025.
 
+# Authentication Features
+## Implemented Features
+- **User Registration**: Email verification required after signup
+- **Flexible Login**: Users can login with either username or email address
+- **Forgot Password**: Complete password reset flow with email links
+- **Password Reset**: Secure token-based password reset (1-hour expiration)
+- **Account Security**: Rate limiting with account lockout (5 failed attempts, 15-minute lockout)
+
+## Authentication Components
+- `LoginForm`: Supports both username and email login with context-aware error messages
+- `SignupForm`: Registration with email verification requirement
+- `ForgotPasswordForm`: Smart detection of email vs username input
+- `ResetPasswordForm`: Token-based password reset with expiry handling
+
+## Validation & Error Handling
+- Robust email validation using comprehensive regex patterns
+- Context-aware error messages for different authentication flows
+- User-friendly error messaging (no technical "Value must be unique" messages)
+- Comprehensive form validation using Zod schemas
+
+## Testing
+- 80+ comprehensive tests covering all authentication scenarios
+- Unit tests for validation utilities and error handling
+- Integration tests for complete authentication flows
+- TDD approach maintained throughout implementation
+
 # Tasks

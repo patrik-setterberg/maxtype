@@ -24,7 +24,8 @@ jest.mock('next/router', () => ({
 }))
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_CMS_URL = 'http://localhost:3000'
+// Set to empty string so API calls use relative URLs in tests
+process.env.NEXT_PUBLIC_CMS_URL = ''
 
 // Mock window.matchMedia (used by some UI components)
 Object.defineProperty(window, 'matchMedia', {

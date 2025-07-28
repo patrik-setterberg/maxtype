@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
-import { cn } from '@/lib/utils'
+import { cn, getAuthErrorMessage } from '@/lib/utils'
 import { LoginSchema, type LoginFormData } from '@/lib/validation'
 
 import { Button } from '@/components/ui/Button'
@@ -28,12 +28,17 @@ const LoginForm: React.FC = () => {
   const [success, setSuccess] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false)
+  const [passwordResetSuccess, setPasswordResetSuccess] = useState<boolean>(false)
   const searchParams = useSearchParams()
 
   useEffect(() => {
     // Check if user just verified their email
     if (searchParams.get('verified') === 'true') {
       setVerificationSuccess(true)
+    }
+    // Check if user just reset their password
+    if (searchParams.get('reset') === 'true') {
+      setPasswordResetSuccess(true)
     }
   }, [searchParams])
 
@@ -85,14 +90,8 @@ const LoginForm: React.FC = () => {
       })
 
       if (!loginReq.ok) {
-        // Handle unverified email specifically
-        if (loginResponse.message && loginResponse.message.includes('verify')) {
-          setError(
-            'Please verify your email address before logging in. Check your inbox for the verification link.',
-          )
-        } else {
-          setError(loginResponse.message || 'Login failed. Please check your credentials.')
-        }
+        const errorMessage = getAuthErrorMessage(loginReq.status, loginResponse, 'login')
+        setError(errorMessage)
         setLoading(false)
         return
       }
@@ -123,7 +122,7 @@ const LoginForm: React.FC = () => {
       ) : (
         <>
           <h1 className={cn('text-2xl font-semibold mb-2')}>Log in</h1>
-          <p>Enter your username and password to log in.</p>
+          <p>Enter your username or email and password to log in.</p>
 
           {verificationSuccess && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
@@ -149,8 +148,31 @@ const LoginForm: React.FC = () => {
             </div>
           )}
 
+          {passwordResetSuccess && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+              <div className="flex items-start space-x-3">
+                <svg
+                  className="flex-shrink-0 h-5 w-5 text-green-400 mt-0.5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <div className="text-sm text-green-700">
+                  <p>
+                    <strong>Password reset successfully!</strong> You can now log in with your new password.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {error && (
-            <ErrorAlert error={'An error occurred. Review the fields below and try again.'} />
+            <ErrorAlert error={error} />
           )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(loginOnSubmit)} className={cn('grid gap-4 mt-8')}>
@@ -160,13 +182,13 @@ const LoginForm: React.FC = () => {
                 control={form.control}
                 render={({ field: formField }) => (
                   <FormItem>
-                    <FormLabel className={cn('text-foreground!')}>Username</FormLabel>
+                    <FormLabel className={cn('text-foreground!')}>Username or Email</FormLabel>
                     <FormControl>
                       <Input
                         {...formField}
                         type="text"
                         className="rounded-sm"
-                        placeholder="Enter your username"
+                        placeholder="Enter your username or email"
                       />
                     </FormControl>
                     <FormMessage className="mt-0!" />
@@ -180,7 +202,15 @@ const LoginForm: React.FC = () => {
                 control={form.control}
                 render={({ field: formField }) => (
                   <FormItem>
-                    <FormLabel className={cn('text-foreground!')}>Password</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className={cn('text-foreground!')}>Password</FormLabel>
+                      <Link
+                        href="/forgot-password"
+                        className="text-sm font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
                     <FormControl>
                       <Input
                         {...formField}

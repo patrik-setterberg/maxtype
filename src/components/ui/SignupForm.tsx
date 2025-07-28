@@ -80,7 +80,7 @@ const SignupForm: React.FC = () => {
           if (response.errors && Array.isArray(response.errors)) {
             let hasFieldErrors = false
             
-            response.errors.forEach((error: any) => {
+            response.errors.forEach((error: { data?: { errors?: Array<{ path: string; message: string }> }; field?: string; message?: string }) => {
               // Check for nested validation errors in error.data.errors
               if (error.data && error.data.errors && Array.isArray(error.data.errors)) {
                 error.data.errors.forEach((fieldError: { path: string; message: string }) => {
@@ -88,9 +88,10 @@ const SignupForm: React.FC = () => {
                     let userFriendlyMessage = fieldError.message
                     
                     // Make error messages more user-friendly
-                    if (fieldError.path === 'email' && fieldError.message.includes('already registered')) {
+                    const errorMsg = fieldError.message.toLowerCase()
+                    if (fieldError.path === 'email' && (errorMsg.includes('already registered') || errorMsg.includes('unique') || errorMsg.includes('must be unique') || errorMsg.includes('value must be unique'))) {
                       userFriendlyMessage = 'This email address is already registered. Please use a different email or try logging in.'
-                    } else if (fieldError.path === 'username' && (fieldError.message.includes('unique') || fieldError.message.includes('already'))) {
+                    } else if (fieldError.path === 'username' && (errorMsg.includes('unique') || errorMsg.includes('already') || errorMsg.includes('must be unique') || errorMsg.includes('value must be unique'))) {
                       userFriendlyMessage = 'This username is already taken. Please choose a different username.'
                     }
                     
@@ -104,9 +105,19 @@ const SignupForm: React.FC = () => {
               }
               // Handle direct field errors (legacy format)
               else if (error.field && error.field in form.getValues()) {
+                let userFriendlyMessage = error.message
+                
+                // Make error messages more user-friendly for legacy format too
+                const errorMsg = error.message?.toLowerCase() || ''
+                if (error.field === 'email' && (errorMsg.includes('already registered') || errorMsg.includes('unique') || errorMsg.includes('must be unique') || errorMsg.includes('value must be unique'))) {
+                  userFriendlyMessage = 'This email address is already registered. Please use a different email or try logging in.'
+                } else if (error.field === 'username' && (errorMsg.includes('unique') || errorMsg.includes('already') || errorMsg.includes('must be unique') || errorMsg.includes('value must be unique'))) {
+                  userFriendlyMessage = 'This username is already taken. Please choose a different username.'
+                }
+                
                 form.setError(error.field as keyof SignupFormData, {
                   type: 'manual',
-                  message: error.message,
+                  message: userFriendlyMessage,
                 })
                 hasFieldErrors = true
               }
@@ -151,7 +162,7 @@ const SignupForm: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Check Your Email!</h1>
           <div className="space-y-2">
             <p className="text-gray-600">
-              We've sent a verification email to your address. Please check your inbox and click the verification link to activate your account.
+              We&apos;ve sent a verification email to your address. Please check your inbox and click the verification link to activate your account.
             </p>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
               <div className="flex items-start space-x-3">
@@ -159,7 +170,7 @@ const SignupForm: React.FC = () => {
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 <div className="text-sm text-blue-700">
-                  <p><strong>Important:</strong> You won't be able to log in until you verify your email address. If you don't see the email, check your spam folder.</p>
+                  <p><strong>Important:</strong> You won&apos;t be able to log in until you verify your email address. If you don&apos;t see the email, check your spam folder.</p>
                 </div>
               </div>
             </div>
