@@ -6,41 +6,39 @@ import { LoginSchema, SignupSchema } from '../validation'
 describe('Form Validation Schemas', () => {
   describe('LoginSchema', () => {
     // Test case 1: Valid login data should pass
-    test('should accept valid email and password', () => {
+    test('should accept valid username and password', () => {
       const validData = {
-        email: 'user@example.com',
+        username: 'testuser',
         password: 'password123',
       }
       
-      // We'll implement this schema next
       expect(() => LoginSchema.parse(validData)).not.toThrow()
     })
 
-    // Test case 2: Invalid email should fail
-    test('should reject invalid email format', () => {
-      const invalidData = {
-        email: 'not-an-email',
-        password: 'password123',
-      }
-      
-      expect(() => LoginSchema.parse(invalidData)).toThrow()
-    })
-
-    // Test case 3: Short password should fail
+    // Test case 2: Short password should fail
     test('should reject password shorter than 6 characters', () => {
       const invalidData = {
-        email: 'user@example.com',
+        username: 'testuser',
         password: '12345', // Only 5 characters
       }
       
       expect(() => LoginSchema.parse(invalidData)).toThrow()
     })
 
-    // Test case 4: Missing fields should fail
-    test('should reject missing email', () => {
+    // Test case 3: Missing fields should fail
+    test('should reject missing username', () => {
       const invalidData = {
         password: 'password123',
-        // email missing
+        // username missing
+      }
+      
+      expect(() => LoginSchema.parse(invalidData)).toThrow()
+    })
+
+    test('should reject empty username', () => {
+      const invalidData = {
+        username: '',
+        password: 'password123',
       }
       
       expect(() => LoginSchema.parse(invalidData)).toThrow()
@@ -48,7 +46,7 @@ describe('Form Validation Schemas', () => {
 
     test('should reject missing password', () => {
       const invalidData = {
-        email: 'user@example.com',
+        username: 'testuser',
         // password missing
       }
       

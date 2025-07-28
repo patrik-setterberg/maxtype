@@ -37,7 +37,7 @@ const SignupForm: React.FC = () => {
     consent: false,
   }
 
-  const theform = useForm<SignupFormData>({
+  const form = useForm<SignupFormData>({
     resolver: zodResolver(SignupSchema),
     defaultValues: defaultVals,
   })
@@ -84,7 +84,7 @@ const SignupForm: React.FC = () => {
               // Check for nested validation errors in error.data.errors
               if (error.data && error.data.errors && Array.isArray(error.data.errors)) {
                 error.data.errors.forEach((fieldError: { path: string; message: string }) => {
-                  if (fieldError.path && fieldError.path in theform.getValues()) {
+                  if (fieldError.path && fieldError.path in form.getValues()) {
                     let userFriendlyMessage = fieldError.message
                     
                     // Make error messages more user-friendly
@@ -94,7 +94,7 @@ const SignupForm: React.FC = () => {
                       userFriendlyMessage = 'This username is already taken. Please choose a different username.'
                     }
                     
-                    theform.setError(fieldError.path as keyof SignupFormData, {
+                    form.setError(fieldError.path as keyof SignupFormData, {
                       type: 'manual',
                       message: userFriendlyMessage,
                     })
@@ -103,8 +103,8 @@ const SignupForm: React.FC = () => {
                 })
               }
               // Handle direct field errors (legacy format)
-              else if (error.field && error.field in theform.getValues()) {
-                theform.setError(error.field as keyof SignupFormData, {
+              else if (error.field && error.field in form.getValues()) {
+                form.setError(error.field as keyof SignupFormData, {
                   type: 'manual',
                   message: error.message,
                 })
@@ -136,7 +136,7 @@ const SignupForm: React.FC = () => {
         setLoading(false)
       }
     },
-    [theform],
+    [form],
   )
 
   return (
@@ -177,12 +177,12 @@ const SignupForm: React.FC = () => {
           {error && (
             <ErrorAlert error={'An error occurred. Review the fields below and try again.'} />
           )}
-          <Form {...theform}>
-            <form onSubmit={theform.handleSubmit(signupOnSubmit)} className={cn('grid gap-4 mt-8')}>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(signupOnSubmit)} className={cn('grid gap-4 mt-8')}>
               {/* Username Field */}
               <FormField
                 name="username"
-                control={theform.control}
+                control={form.control}
                 render={({ field: formField }) => (
                   <FormItem>
                     <FormLabel className={cn('text-foreground!')}>Username</FormLabel>
@@ -202,7 +202,7 @@ const SignupForm: React.FC = () => {
               {/* Email Field */}
               <FormField
                 name="email"
-                control={theform.control}
+                control={form.control}
                 render={({ field: formField }) => (
                   <FormItem>
                     <FormLabel className={cn('text-foreground!')}>Email</FormLabel>
@@ -222,7 +222,7 @@ const SignupForm: React.FC = () => {
               {/* Password Field */}
               <FormField
                 name="password"
-                control={theform.control}
+                control={form.control}
                 render={({ field: formField }) => (
                   <FormItem>
                     <FormLabel className={cn('text-foreground!')}>Password</FormLabel>
@@ -242,7 +242,7 @@ const SignupForm: React.FC = () => {
               {/* Confirm Password Field */}
               <FormField
                 name="password-repeat"
-                control={theform.control}
+                control={form.control}
                 render={({ field: formField }) => (
                   <FormItem>
                     <FormLabel className={cn('text-foreground!')}>Confirm Password</FormLabel>
@@ -262,7 +262,7 @@ const SignupForm: React.FC = () => {
               {/* Consent Checkbox */}
               <FormField
                 name="consent"
-                control={theform.control}
+                control={form.control}
                 render={({ field: formField, fieldState: { error } }) => (
                   <FormItem className="items-top flex flex-wrap space-x-2">
                     <Checkbox

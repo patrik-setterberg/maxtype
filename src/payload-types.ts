@@ -131,20 +131,18 @@ export interface AdminAuthOperations {
 }
 export interface UserAuthOperations {
   forgotPassword: {
-    email: string;
-    password: string;
+    username: string;
   };
   login: {
-    email: string;
     password: string;
+    username: string;
   };
   registerFirstUser: {
-    email: string;
     password: string;
+    username: string;
   };
   unlock: {
-    email: string;
-    password: string;
+    username: string;
   };
 }
 /**
@@ -171,7 +169,6 @@ export interface Admin {
  */
 export interface User {
   id: string;
-  username: string;
   preferences: {
     language: 'en' | 'es' | 'fr' | 'de' | 'sv';
     keyboardLayout: 'qwerty' | 'azerty' | 'dvorak' | 'colemak';
@@ -180,7 +177,8 @@ export interface User {
   };
   updatedAt: string;
   createdAt: string;
-  email: string;
+  email?: string | null;
+  username: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
   salt?: string | null;
@@ -554,7 +552,6 @@ export interface AdminsSelect<T extends boolean = true> {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
-  username?: T;
   preferences?:
     | T
     | {
@@ -566,6 +563,7 @@ export interface UsersSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   email?: T;
+  username?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
   salt?: T;

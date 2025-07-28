@@ -8,6 +8,7 @@ export const Users: CollectionConfig = {
   auth: {
     maxLoginAttempts: 5,        // Lock account after 5 failed login attempts
     lockTime: 15 * 60 * 1000,   // Unlock after 15 minutes (in milliseconds)
+    loginWithUsername: true,    // Allow login with username or email
     verify: {
       generateEmailHTML: ({ token }) => {
         // Create verification URL - adjust this to match your frontend URL

@@ -3,13 +3,14 @@ import { z } from 'zod'
 /**
  * Login form validation schema
  * Used by LoginForm component
+ * Username-only login
  */
 export const LoginSchema = z.object({
-  email: z
+  username: z
     .string({
-      required_error: 'Email is required.',
+      required_error: 'Username is required.',
     })
-    .email({ message: 'Invalid email address.' }),
+    .min(1, { message: 'Username is required.' }),
   password: z
     .string({
       required_error: 'Password is required.',
