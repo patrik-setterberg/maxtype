@@ -1,9 +1,10 @@
 'use client'
 
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 import { cn } from '@/lib/utils'
 import { LoginSchema, type LoginFormData } from '@/lib/validation'
@@ -26,6 +27,15 @@ const LoginForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
+  const [verificationSuccess, setVerificationSuccess] = useState<boolean>(false)
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    // Check if user just verified their email
+    if (searchParams.get('verified') === 'true') {
+      setVerificationSuccess(true)
+    }
+  }, [searchParams])
 
   // Use our tested validation schema instead of dynamic generation
   const defaultVals: LoginFormData = {
@@ -61,7 +71,12 @@ const LoginForm: React.FC = () => {
         const loginResponse = await loginReq.json()
 
         if (!loginReq.ok) {
-          setError(loginResponse.message || 'Login failed. Please check your credentials.')
+          // Handle unverified email specifically
+          if (loginResponse.message && loginResponse.message.includes('verify')) {
+            setError('Please verify your email address before logging in. Check your inbox for the verification link.')
+          } else {
+            setError(loginResponse.message || 'Login failed. Please check your credentials.')
+          }
           setLoading(false)
           return
         }
@@ -95,6 +110,20 @@ const LoginForm: React.FC = () => {
         <>
           <h1 className={cn('text-2xl font-semibold mb-2')}>Log in</h1>
           <p>Enter your email address and password to log in.</p>
+          
+          {verificationSuccess && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+              <div className="flex items-start space-x-3">
+                <svg className="flex-shrink-0 h-5 w-5 text-green-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <div className="text-sm text-green-700">
+                  <p><strong>Email verified successfully!</strong> You can now log in to your account.</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {error && (
             <ErrorAlert error={'An error occurred. Review the fields below and try again.'} />
           )}

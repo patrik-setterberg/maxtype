@@ -8,6 +8,163 @@ export const Users: CollectionConfig = {
   auth: {
     maxLoginAttempts: 5,        // Lock account after 5 failed login attempts
     lockTime: 15 * 60 * 1000,   // Unlock after 15 minutes (in milliseconds)
+    verify: {
+      generateEmailHTML: ({ token }) => {
+        // Create verification URL - adjust this to match your frontend URL
+        const url = `${process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'}/verify-email?token=${token}`
+        
+        return `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Verify Your Email - MaxType</title>
+              <style>
+                * { box-sizing: border-box; }
+                body { 
+                  font-family: system-ui, -apple-system, sans-serif; 
+                  line-height: 1.6; 
+                  color: #262626; 
+                  background: #ffffff;
+                  margin: 0;
+                  padding: 0;
+                }
+                .container { 
+                  max-width: 600px; 
+                  margin: 0 auto; 
+                  background: #ffffff;
+                }
+                .header { 
+                  background: #262626; 
+                  color: #ffffff; 
+                  padding: 32px 24px; 
+                  text-align: center; 
+                  border-radius: 10px 10px 0 0; 
+                }
+                .header h1 { 
+                  margin: 0; 
+                  font-size: 24px; 
+                  font-weight: 600; 
+                  letter-spacing: -0.025em;
+                }
+                .content { 
+                  background: #ffffff; 
+                  padding: 32px 24px; 
+                  border: 1px solid #e5e5e5;
+                  border-top: none;
+                  border-radius: 0 0 10px 10px; 
+                }
+                .content h2 { 
+                  color: #171717; 
+                  font-size: 20px; 
+                  font-weight: 600; 
+                  margin: 0 0 16px 0; 
+                }
+                .content p { 
+                  color: #525252; 
+                  margin: 0 0 16px 0; 
+                }
+                .button-container { 
+                  text-align: center; 
+                  margin: 24px 0; 
+                }
+                .button { 
+                  display: inline-block; 
+                  background: #262626; 
+                  color: #ffffff; 
+                  padding: 12px 24px; 
+                  text-decoration: none; 
+                  border-radius: 10px; 
+                  font-weight: 500;
+                  transition: background-color 0.2s;
+                }
+                .button:hover { 
+                  background: #404040; 
+                }
+                .code-block { 
+                  word-break: break-all; 
+                  background: #f5f5f5; 
+                  border: 1px solid #e5e5e5;
+                  padding: 12px; 
+                  border-radius: 6px; 
+                  font-family: 'Roboto Mono', monospace; 
+                  font-size: 14px;
+                  color: #171717;
+                  margin: 16px 0;
+                }
+                .divider {
+                  height: 1px;
+                  background: #e5e5e5;
+                  margin: 24px 0;
+                }
+                .footer { 
+                  color: #737373; 
+                  font-size: 14px; 
+                }
+                .footer p { 
+                  color: #737373; 
+                }
+                .logo {
+                  font-family: 'Roboto Mono', monospace;
+                  font-weight: 700;
+                  letter-spacing: -0.05em;
+                }
+                
+                /* Dark mode support */
+                @media (prefers-color-scheme: dark) {
+                  body { background: #0a0a0a; color: #e5e5e5; }
+                  .container { background: #0a0a0a; }
+                  .content { 
+                    background: #171717; 
+                    border-color: #262626; 
+                  }
+                  .content h2 { color: #ffffff; }
+                  .content p { color: #a3a3a3; }
+                  .code-block { 
+                    background: #262626; 
+                    border-color: #404040; 
+                    color: #e5e5e5; 
+                  }
+                  .divider { background: #404040; }
+                  .footer p { color: #737373; }
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1 class="logo">MaxType</h1>
+                </div>
+                <div class="content">
+                  <h2>Verify Your Email Address</h2>
+                  <p>Thanks for joining MaxType! We're excited to help you improve your typing skills.</p>
+                  <p>To complete your registration and start your typing journey, please verify your email address by clicking the button below:</p>
+                  
+                  <div class="button-container">
+                    <a href="${url}" class="button">Verify Email Address</a>
+                  </div>
+                  
+                  <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+                  <div class="code-block">${url}</div>
+                  
+                  <div class="divider"></div>
+                  
+                  <div class="footer">
+                    <p><strong>Security note:</strong> This verification link will expire in 24 hours.</p>
+                    <p>If you didn't create an account with MaxType, you can safely ignore this email.</p>
+                    <p>Happy typing!<br><strong>The MaxType Team</strong></p>
+                  </div>
+                </div>
+              </div>
+            </body>
+          </html>
+        `
+      },
+      generateEmailSubject: () => {
+        return 'Verify your MaxType account'
+      }
+    }
   },
   access: {
     // Allow public user creation (signup)
