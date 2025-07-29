@@ -65,11 +65,6 @@ const LoginForm: React.FC = () => {
         password: data.password,
       }
 
-      // Debug logging
-      console.log('Login attempt:', {
-        username: data.username,
-        requestBody,
-      })
 
       // Use PayloadCMS built-in login endpoint
       const loginReq = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/users/login`, {
@@ -83,11 +78,6 @@ const LoginForm: React.FC = () => {
 
       const loginResponse = await loginReq.json()
 
-      // Debug logging for response
-      console.log('Login response:', {
-        status: loginReq.status,
-        response: loginResponse,
-      })
 
       if (!loginReq.ok) {
         const errorMessage = getAuthErrorMessage(loginReq.status, loginResponse, 'login')
