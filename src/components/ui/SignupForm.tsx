@@ -11,7 +11,7 @@ import { SignupSchema, type SignupFormData } from '@/lib/validation'
 import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Loader } from '@/components/ui/Loader'
-import { ErrorAlert } from '@/components/ui/ErrorAlert'
+import { MessageAlert } from '@/components/ui/MessageAlert'
 
 import {
   Form,
@@ -186,7 +186,7 @@ const SignupForm: React.FC = () => {
           <h1 className={cn('text-2xl font-semibold mb-2')}>Create account</h1>
           <p>Fill out the form below to create an account.</p>
           {error && (
-            <ErrorAlert error={'An error occurred. Review the fields below and try again.'} />
+            <MessageAlert message={'An error occurred. Review the fields below and try again.'} type="error" />
           )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(signupOnSubmit)} className={cn('grid gap-4 mt-8')}>

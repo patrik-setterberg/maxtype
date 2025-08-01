@@ -11,7 +11,7 @@ import { ResetPasswordSchema, type ResetPasswordFormData } from '@/lib/validatio
 
 import { Button } from '@/components/ui/Button'
 import { Loader } from '@/components/ui/Loader'
-import { ErrorAlert } from '@/components/ui/ErrorAlert'
+import { MessageAlert } from '@/components/ui/MessageAlert'
 
 import {
   Form,
@@ -183,7 +183,7 @@ const ResetPasswordForm: React.FC = () => {
           <p>Enter your new password below to complete the password reset process.</p>
 
           {error && (
-            <ErrorAlert error={error} />
+            <MessageAlert message={error} type="error" />
           )}
           
           <Form {...form}>

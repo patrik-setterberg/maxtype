@@ -11,7 +11,7 @@ import { LoginSchema, type LoginFormData } from '@/lib/validation'
 
 import { Button } from '@/components/ui/Button'
 import { Loader } from '@/components/ui/Loader'
-import { ErrorAlert } from '@/components/ui/ErrorAlert'
+import { MessageAlert } from '@/components/ui/MessageAlert'
 
 import {
   Form,
@@ -162,7 +162,7 @@ const LoginForm: React.FC = () => {
           )}
 
           {error && (
-            <ErrorAlert error={error} />
+            <MessageAlert message={error} type="error" />
           )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(loginOnSubmit)} className={cn('grid gap-4 mt-8')}>

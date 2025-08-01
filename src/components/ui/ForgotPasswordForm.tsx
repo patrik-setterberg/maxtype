@@ -10,7 +10,7 @@ import { ForgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/validat
 
 import { Button } from '@/components/ui/Button'
 import { Loader } from '@/components/ui/Loader'
-import { ErrorAlert } from '@/components/ui/ErrorAlert'
+import { MessageAlert } from '@/components/ui/MessageAlert'
 
 import {
   Form,
@@ -127,7 +127,7 @@ const ForgotPasswordForm: React.FC = () => {
             registered email address.
           </p>
 
-          {error && <ErrorAlert error={error} />}
+          {error && <MessageAlert message={error} type="error" />}
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-4 mt-8')}>
