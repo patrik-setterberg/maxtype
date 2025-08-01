@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Generated files
+src/payload-types.ts
+*.d.ts
+
+# Configuration files that should maintain specific formatting
+.env*
+Dockerfile
+docker-compose.yml
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
+
+# Payload CMS
+.payload/
+
+# Other files that shouldn't be formatted
+README.md
+CHANGELOG.md
+LICENSE
