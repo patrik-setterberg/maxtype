@@ -45,8 +45,6 @@ const ForgotPasswordForm: React.FC = () => {
     const payload = isEmail ? { email: data.usernameOrEmail } : { username: data.usernameOrEmail }
 
     try {
-      console.log('Forgot password request:', data)
-
       // Use PayloadCMS built-in forgot password endpoint
       const response = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/users/forgot-password`, {
         method: 'POST',
@@ -57,11 +55,6 @@ const ForgotPasswordForm: React.FC = () => {
       })
 
       const responseData = await response.json()
-
-      console.log('Forgot password response:', {
-        status: response.status,
-        response: responseData,
-      })
 
       if (!response.ok) {
         const errorMessage = getAuthErrorMessage(response.status, responseData, 'forgot-password')

@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Added by shadcn/ui */
 @plugin "tailwindcss-animate";
@@ -67,7 +67,6 @@ img {
   display: block;
 }
 
-
 a {
   color: currentColor;
 }
@@ -77,8 +76,10 @@ svg {
 }
 
 input:is(:-webkit-autofill, :autofill) {
-  background-color: var(--primary-foreground) !important; 
-  transition: background-color 0s 9999s, color 0s 9999s !important;
+  background-color: var(--primary-foreground) !important;
+  transition:
+    background-color 0s 9999s,
+    color 0s 9999s !important;
   color: var(--primary) !important;
 }
 
@@ -87,47 +88,47 @@ input:is(:-webkit-autofill, :autofill) {
   /* Pure slate background - neutral and clean */
   --background: oklch(0.15 0.005 240);
   --foreground: oklch(0.92 0.005 240);
-  
+
   /* Cards with subtle slate elevation */
   --card: oklch(0.19 0.007 240);
   --card-foreground: oklch(0.92 0.005 240);
-  
+
   /* Popovers matching cards */
   --popover: oklch(0.19 0.007 240);
   --popover-foreground: oklch(0.92 0.005 240);
-  
+
   /* Muted teal primary - true blue-teal, not green */
   --primary: oklch(0.62 0.08 200);
   --primary-foreground: oklch(0.15 0.005 240);
-  
+
   /* Slate secondary with minimal teal hint */
   --secondary: oklch(0.28 0.01 210);
   --secondary-foreground: oklch(0.92 0.005 240);
-  
+
   /* Muted slate elements */
   --muted: oklch(0.28 0.01 210);
   --muted-foreground: oklch(0.62 0.015 220);
-  
+
   /* Accent with subtle teal */
   --accent: oklch(0.32 0.015 210);
   --accent-foreground: oklch(0.92 0.005 240);
-  
+
   /* Warm destructive for contrast against cool slate */
   --destructive: oklch(0.55 0.15 15);
   --destructive-foreground: oklch(0.92 0.005 240);
-  
+
   /* Subtle slate borders with teal hint */
   --border: oklch(0.32 0.015 210);
   --input: oklch(0.22 0.008 240);
   --ring: oklch(0.62 0.08 200);
-  
+
   /* Harmonious chart colors - teal-focused palette */
   --chart-1: oklch(0.62 0.08 200);
   --chart-2: oklch(0.58 0.09 220);
   --chart-3: oklch(0.66 0.07 180);
-  --chart-4: oklch(0.54 0.10 250);
-  --chart-5: oklch(0.70 0.06 160);
-  
+  --chart-4: oklch(0.54 0.1 250);
+  --chart-5: oklch(0.7 0.06 160);
+
   /* Clean slate sidebar */
   --sidebar: oklch(0.17 0.006 240);
   --sidebar-foreground: oklch(0.92 0.005 240);
@@ -185,5 +186,13 @@ input:is(:-webkit-autofill, :autofill) {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Theme transitions - only active during theme changes */
+.theme-transitioning,
+.theme-transitioning * {
+  transition-property: background-color, border-color, color, fill, stroke !important;
+  transition-duration: 0.15s !important;
+  transition-timing-function: ease-out !important;
 }
 /* /Added by shadcn/ui */

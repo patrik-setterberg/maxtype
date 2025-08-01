@@ -45,15 +45,14 @@ export const SignupSchema = z
       })
       .min(6, { message: 'Password must be at least 6 characters.' })
       .max(50, { message: 'Password must be at most 50 characters.' }),
-    'password-repeat': z
-      .string({
-        required_error: 'Password confirmation is required.',
-      }),
-    consent: z.boolean().refine((val) => val === true, {
+    'password-repeat': z.string({
+      required_error: 'Password confirmation is required.',
+    }),
+    consent: z.boolean().refine(val => val === true, {
       message: 'You must agree to the terms in the privacy policy.',
     }),
   })
-  .refine((data) => data.password === data['password-repeat'], {
+  .refine(data => data.password === data['password-repeat'], {
     message: 'Passwords do not match',
     path: ['password-repeat'],
   })
@@ -62,24 +61,30 @@ export const SignupSchema = z
  * User preferences validation schema
  * Used for validating both localStorage and API preference updates
  */
-export const PreferenceSchema = z.object({
-  language: z.enum(['en', 'es', 'fr', 'de', 'sv'], {
-    required_error: 'Language is required.',
-    invalid_type_error: 'Invalid language selection.',
-  }),
-  keyboardLayout: z.enum(['qwerty', 'azerty', 'dvorak', 'colemak'], {
-    required_error: 'Keyboard layout is required.',
-    invalid_type_error: 'Invalid keyboard layout selection.',
-  }),
-  testDuration: z.enum(['30', '60', '120'], {
-    required_error: 'Test duration is required.',
-    invalid_type_error: 'Invalid test duration selection.',
-  }),
-  showKeyboard: z.boolean({
-    required_error: 'Show keyboard preference is required.',
-    invalid_type_error: 'Show keyboard must be a boolean value.',
-  }),
-}).strict() // Prevent additional properties
+export const PreferenceSchema = z
+  .object({
+    language: z.enum(['en', 'es', 'fr', 'de', 'sv'], {
+      required_error: 'Language is required.',
+      invalid_type_error: 'Invalid language selection.',
+    }),
+    keyboardLayout: z.enum(['qwerty', 'azerty', 'dvorak', 'colemak'], {
+      required_error: 'Keyboard layout is required.',
+      invalid_type_error: 'Invalid keyboard layout selection.',
+    }),
+    testDuration: z.enum(['30', '60', '120'], {
+      required_error: 'Test duration is required.',
+      invalid_type_error: 'Invalid test duration selection.',
+    }),
+    showKeyboard: z.boolean({
+      required_error: 'Show keyboard preference is required.',
+      invalid_type_error: 'Show keyboard must be a boolean value.',
+    }),
+    theme: z.enum(['light', 'dark', 'system'], {
+      required_error: 'Theme preference is required.',
+      invalid_type_error: 'Invalid theme selection.',
+    }),
+  })
+  .strict() // Prevent additional properties
 
 /**
  * Forgot password form validation schema
@@ -106,12 +111,11 @@ export const ResetPasswordSchema = z
       })
       .min(6, { message: 'Password must be at least 6 characters.' })
       .max(50, { message: 'Password must be at most 50 characters.' }),
-    'password-repeat': z
-      .string({
-        required_error: 'Password confirmation is required.',
-      }),
+    'password-repeat': z.string({
+      required_error: 'Password confirmation is required.',
+    }),
   })
-  .refine((data) => data.password === data['password-repeat'], {
+  .refine(data => data.password === data['password-repeat'], {
     message: 'Passwords do not match',
     path: ['password-repeat'],
   })

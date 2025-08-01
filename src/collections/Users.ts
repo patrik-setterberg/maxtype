@@ -6,19 +6,19 @@ export const Users: CollectionConfig = {
     useAsTitle: 'username',
   },
   auth: {
-    maxLoginAttempts: 5,        // Lock account after 5 failed login attempts
-    lockTime: 15 * 60 * 1000,   // Unlock after 15 minutes (in milliseconds)
+    maxLoginAttempts: 5, // Lock account after 5 failed login attempts
+    lockTime: 15 * 60 * 1000, // Unlock after 15 minutes (in milliseconds)
     loginWithUsername: {
-      allowEmailLogin: true,    // Allow login with both username AND email
-      requireEmail: false,      // Email is not required (default: false)
+      allowEmailLogin: true, // Allow login with both username AND email
+      requireEmail: false, // Email is not required (default: false)
     },
     forgotPassword: {
       expiration: 3600000, // 1 hour in milliseconds
-      generateEmailHTML: (args) => {
+      generateEmailHTML: args => {
         const { token } = args || {}
         // Create reset password URL - adjust this to match your frontend URL
         const url = `${process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'}/reset-password?token=${token}`
-        
+
         return `
           <!DOCTYPE html>
           <html>
@@ -169,14 +169,14 @@ export const Users: CollectionConfig = {
       },
       generateEmailSubject: () => {
         return 'Reset your MaxType password'
-      }
+      },
     },
     verify: {
-      generateEmailHTML: (args) => {
+      generateEmailHTML: args => {
         const { token } = args || {}
         // Create verification URL - adjust this to match your frontend URL
         const url = `${process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'}/verify-email?token=${token}`
-        
+
         return `
           <!DOCTYPE html>
           <html>
@@ -327,8 +327,8 @@ export const Users: CollectionConfig = {
       },
       generateEmailSubject: () => {
         return 'Verify your MaxType account'
-      }
-    }
+      },
+    },
   },
   access: {
     // Allow public user creation (signup)
@@ -418,6 +418,17 @@ export const Users: CollectionConfig = {
           label: 'Show Keyboard',
           required: true,
           defaultValue: true,
+        },
+        {
+          name: 'theme',
+          type: 'select',
+          options: [
+            { label: 'Light', value: 'light' },
+            { label: 'Dark', value: 'dark' },
+            { label: 'System', value: 'system' },
+          ],
+          required: true,
+          defaultValue: 'system',
         },
       ],
     },

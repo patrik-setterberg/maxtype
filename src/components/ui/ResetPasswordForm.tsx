@@ -28,7 +28,7 @@ const ResetPasswordForm: React.FC = () => {
   const [success, setSuccess] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
   const [tokenValid, setTokenValid] = useState<boolean | null>(null)
-  
+
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get('token')
@@ -52,59 +52,58 @@ const ResetPasswordForm: React.FC = () => {
     defaultValues: defaultVals,
   })
 
-  const onSubmit = useCallback(async (data: ResetPasswordFormData) => {
-    if (!token) {
-      setError('No reset token provided. Please request a new password reset.')
-      return
-    }
-
-    setError(null)
-    setSuccess(false)
-    setLoading(true)
-
-    try {
-      console.log('Reset password request with token:', token)
-
-      // Use PayloadCMS built-in reset password endpoint
-      const response = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL}/api/users/reset-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token: token,
-          password: data.password,
-        }),
-      })
-
-      const responseData = await response.json()
-
-      console.log('Reset password response:', {
-        status: response.status,
-        response: responseData,
-      })
-
-      if (!response.ok) {
-        const errorMessage = getAuthErrorMessage(response.status, responseData, 'reset-password')
-        setError(errorMessage)
-        setLoading(false)
+  const onSubmit = useCallback(
+    async (data: ResetPasswordFormData) => {
+      if (!token) {
+        setError('No reset token provided. Please request a new password reset.')
         return
       }
 
-      setLoading(false)
-      setSuccess(true)
-
-      // Redirect to login page after 3 seconds
-      setTimeout(() => {
-        router.push('/login?reset=true')
-      }, 3000)
-    } catch (error) {
-      console.error('Reset password error:', error)
-      setError('An unexpected error occurred. Please try again later.')
+      setError(null)
       setSuccess(false)
-      setLoading(false)
-    }
-  }, [token, router])
+      setLoading(true)
+
+      try {
+        // Use PayloadCMS built-in reset password endpoint
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_CMS_URL}/api/users/reset-password`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              token: token,
+              password: data.password,
+            }),
+          },
+        )
+
+        const responseData = await response.json()
+
+        if (!response.ok) {
+          const errorMessage = getAuthErrorMessage(response.status, responseData, 'reset-password')
+          setError(errorMessage)
+          setLoading(false)
+          return
+        }
+
+        setLoading(false)
+        setSuccess(true)
+
+        // Redirect to login page after 3 seconds
+        setTimeout(() => {
+          router.push('/login?reset=true')
+        }, 3000)
+      } catch (error) {
+        console.error('Reset password error:', error)
+        setError('An unexpected error occurred. Please try again later.')
+        setSuccess(false)
+        setLoading(false)
+      }
+    },
+    [token, router],
+  )
 
   // If token is invalid, show error state
   if (tokenValid === false) {
@@ -126,12 +125,10 @@ const ResetPasswordForm: React.FC = () => {
             </svg>
             <div className="text-sm text-red-700">
               <p>
-                <strong>Invalid or missing reset token.</strong> This password reset link 
-                appears to be invalid or has expired.
+                <strong>Invalid or missing reset token.</strong> This password reset link appears to
+                be invalid or has expired.
               </p>
-              <p className="mt-2">
-                Please request a new password reset to continue.
-              </p>
+              <p className="mt-2">Please request a new password reset to continue.</p>
             </div>
           </div>
         </div>
@@ -167,12 +164,10 @@ const ResetPasswordForm: React.FC = () => {
               </svg>
               <div className="text-sm text-green-700">
                 <p>
-                  <strong>Your password has been reset successfully!</strong> You can now 
-                  log in with your new password.
+                  <strong>Your password has been reset successfully!</strong> You can now log in
+                  with your new password.
                 </p>
-                <p className="mt-2">
-                  Redirecting you to the login page in a few seconds...
-                </p>
+                <p className="mt-2">Redirecting you to the login page in a few seconds...</p>
               </div>
             </div>
           </div>
@@ -182,10 +177,8 @@ const ResetPasswordForm: React.FC = () => {
           <h1 className={cn('text-2xl font-semibold mb-2')}>Reset Your Password</h1>
           <p>Enter your new password below to complete the password reset process.</p>
 
-          {error && (
-            <MessageAlert message={error} type="error" />
-          )}
-          
+          {error && <MessageAlert message={error} type="error" />}
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className={cn('grid gap-4 mt-8')}>
               {/* Password Field */}
@@ -234,7 +227,7 @@ const ResetPasswordForm: React.FC = () => {
             </form>
             <Loader show={loading} />
           </Form>
-          
+
           <div className={cn('text-center mt-6')}>
             <p className="text-sm text-muted-foreground">
               Remember your password?{' '}

@@ -4,6 +4,7 @@ import './styles.css'
 
 import Header from '@/components/ui/Header'
 import Footer from '@/components/ui/Footer'
+import { ThemeProvider, THEME_SCRIPT } from '@/components/ui/ThemeProvider'
 
 export const metadata = {
   description: 'Type your heart out',
@@ -14,11 +15,16 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const { children } = props
 
   return (
-    <html lang="en">
-      <body className={cn('dark', 'bg-primary-foreground', 'min-h-screen', 'flex', 'flex-col')}>
-        <Header />
-        <main className={cn('flex-1')}>{children}</main>
-        <Footer />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
+      <body className={cn('bg-background', 'text-foreground', 'min-h-screen', 'flex', 'flex-col')}>
+        <ThemeProvider>
+          <Header />
+          <main className={cn('flex-1')}>{children}</main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   )

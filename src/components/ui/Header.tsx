@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import { CircleUserRound, Settings } from 'lucide-react'
+import ThemeSelect from './ThemeSelect'
 
 const Header: React.FC = () => {
   const { user, loading, logout, isAuthenticated } = useAuth()
@@ -20,7 +21,7 @@ const Header: React.FC = () => {
           <Link
             href="/"
             className={cn(
-              'flex items-center space-x-2 text-2xl font-bold text-primary hover:text-primary/80 transition-colors',
+              'flex items-center space-x-2 text-2xl font-bold text-primary hover:text-primary/80',
             )}
           >
             <div
@@ -54,6 +55,7 @@ const Header: React.FC = () => {
               >
                 <CircleUserRound size={20} />
               </Link>
+              <ThemeSelect />
               {/* Settings available to all users */}
               <Link
                 href="/settings"
@@ -76,6 +78,7 @@ const Header: React.FC = () => {
           ) : (
             // Logged out user navigation
             <>
+              <ThemeSelect />
               {/* Settings available to all users */}
               <Link
                 href="/settings"

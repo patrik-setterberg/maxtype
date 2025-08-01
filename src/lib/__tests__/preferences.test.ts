@@ -54,13 +54,14 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'azerty' as const,
         testDuration: '60' as const,
         showKeyboard: false,
+        theme: 'dark' as const,
       }
 
       PreferenceStorage.saveToLocalStorage(preferences)
 
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'maxtype-preferences',
-        JSON.stringify(preferences)
+        JSON.stringify(preferences),
       )
     })
 
@@ -70,6 +71,7 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'dvorak' as const,
         testDuration: '120' as const,
         showKeyboard: true,
+        theme: 'light' as const,
       }
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(preferences))
@@ -112,6 +114,7 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'qwerty',
         testDuration: '30',
         showKeyboard: true,
+        theme: 'system',
       })
     })
   })
@@ -123,6 +126,7 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'azerty' as const,
         testDuration: '60' as const,
         showKeyboard: false,
+        theme: 'dark' as const,
       }
 
       expect(PreferenceStorage.isValidPreferences(validPreferences)).toBe(true)
@@ -134,6 +138,7 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'qwerty' as const,
         testDuration: '30' as const,
         showKeyboard: true,
+        theme: 'system' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -145,6 +150,7 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'invalid',
         testDuration: '30' as const,
         showKeyboard: true,
+        theme: 'system' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -156,6 +162,7 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'qwerty' as const,
         testDuration: '45',
         showKeyboard: true,
+        theme: 'system' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -167,6 +174,7 @@ describe('PreferenceStorage', () => {
         keyboardLayout: 'qwerty' as const,
         testDuration: '30' as const,
         showKeyboard: 'true',
+        theme: 'system' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -176,7 +184,7 @@ describe('PreferenceStorage', () => {
       const incompletePreferences = {
         language: 'en' as const,
         keyboardLayout: 'qwerty' as const,
-        // missing testDuration and showKeyboard
+        // missing testDuration, showKeyboard, and theme
       }
 
       expect(PreferenceStorage.isValidPreferences(incompletePreferences)).toBe(false)
@@ -203,6 +211,7 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'qwerty',
         testDuration: '30',
         showKeyboard: true,
+        theme: 'system',
       })
       expect(result.current.isGuest).toBe(true)
       expect(result.current.loading).toBe(false)
@@ -214,6 +223,7 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'azerty' as const,
         testDuration: '60' as const,
         showKeyboard: false,
+        theme: 'dark' as const,
       }
       localStorageMock.getItem.mockReturnValue(JSON.stringify(savedPreferences))
 
@@ -232,6 +242,7 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'dvorak',
           testDuration: '120',
           showKeyboard: false,
+          theme: 'light',
         })
       })
 
@@ -240,6 +251,7 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'dvorak',
         testDuration: '120',
         showKeyboard: false,
+        theme: 'light',
       })
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'maxtype-preferences',
@@ -248,14 +260,15 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'dvorak',
           testDuration: '120',
           showKeyboard: false,
-        })
+          theme: 'light',
+        }),
       )
     })
 
     test('should reject invalid preference updates', async () => {
       // Ensure we start with defaults (no localStorage data)
       localStorageMock.getItem.mockReturnValue(null)
-      
+
       const { result } = renderHook(() => usePreferences())
 
       // Verify we start with defaults
@@ -264,6 +277,7 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'qwerty',
         testDuration: '30',
         showKeyboard: true,
+        theme: 'system',
       })
 
       let errorCaught = false
@@ -274,6 +288,7 @@ describe('usePreferences hook', () => {
             keyboardLayout: 'qwerty',
             testDuration: '30',
             showKeyboard: true,
+            theme: 'system',
           } as UserPreferences)
         } catch (error) {
           errorCaught = true
@@ -282,13 +297,14 @@ describe('usePreferences hook', () => {
       })
 
       expect(errorCaught).toBe(true)
-      
+
       // Preferences should remain unchanged
       expect(result.current.preferences).toEqual({
         language: 'en',
         keyboardLayout: 'qwerty',
         testDuration: '30',
         showKeyboard: true,
+        theme: 'system',
       })
     })
   })
@@ -304,6 +320,7 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'azerty',
           testDuration: '60',
           showKeyboard: false,
+          theme: 'dark',
         },
       } as User
     })
@@ -316,6 +333,7 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'azerty',
         testDuration: '60',
         showKeyboard: false,
+        theme: 'dark',
       })
       expect(result.current.isGuest).toBe(false)
     })
@@ -323,17 +341,19 @@ describe('usePreferences hook', () => {
     test('should update user preferences via API', async () => {
       mockPayloadFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({
-          doc: {
-            ...mockAuth.user,
-            preferences: {
-              language: 'fr',
-              keyboardLayout: 'dvorak',
-              testDuration: '120',
-              showKeyboard: true,
+        json: () =>
+          Promise.resolve({
+            doc: {
+              ...mockAuth.user,
+              preferences: {
+                language: 'fr',
+                keyboardLayout: 'dvorak',
+                testDuration: '120',
+                showKeyboard: true,
+                theme: 'light',
+              },
             },
-          },
-        }),
+          }),
       })
 
       const { result } = renderHook(() => usePreferences())
@@ -344,6 +364,7 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'dvorak',
           testDuration: '120',
           showKeyboard: true,
+          theme: 'light',
         })
       })
 
@@ -359,6 +380,7 @@ describe('usePreferences hook', () => {
             keyboardLayout: 'dvorak',
             testDuration: '120',
             showKeyboard: true,
+            theme: 'light',
           },
         }),
       })
@@ -368,6 +390,7 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'dvorak',
         testDuration: '120',
         showKeyboard: true,
+        theme: 'light',
       })
     })
 
@@ -387,6 +410,7 @@ describe('usePreferences hook', () => {
             keyboardLayout: 'dvorak',
             testDuration: '120',
             showKeyboard: true,
+            theme: 'light',
           })
         } catch (error) {
           expect(error).toBeInstanceOf(Error)
@@ -406,20 +430,22 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'azerty' as const,
         testDuration: '60' as const,
         showKeyboard: false,
+        theme: 'dark' as const,
       }
       localStorageMock.getItem.mockReturnValue(JSON.stringify(guestPreferences))
 
       // Mock successful migration API call
       mockPayloadFetch.mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve({
-          doc: {
-            id: 'user-123',
-            username: 'testuser',
-            email: 'test@example.com',
-            preferences: guestPreferences,
-          },
-        }),
+        json: () =>
+          Promise.resolve({
+            doc: {
+              id: 'user-123',
+              username: 'testuser',
+              email: 'test@example.com',
+              preferences: guestPreferences,
+            },
+          }),
       })
 
       // Start rendering with guest user
@@ -439,6 +465,7 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'qwerty',
           testDuration: '30',
           showKeyboard: true,
+          theme: 'system',
         },
       } as User
 
@@ -478,6 +505,7 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'azerty' as const,
         testDuration: '60' as const,
         showKeyboard: false,
+        theme: 'dark' as const,
       }
       localStorageMock.getItem.mockReturnValue(JSON.stringify(guestPreferences))
 
@@ -496,6 +524,7 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'dvorak',
           testDuration: '120',
           showKeyboard: true,
+          theme: 'light',
         },
       } as User
 
@@ -514,6 +543,8 @@ describe('usePreferences hook', () => {
         keyboardLayout: 'dvorak',
         testDuration: '120',
         showKeyboard: true,
+        theme: 'light',
+        theme: 'light',
       })
 
       // Should still clear localStorage
@@ -540,15 +571,23 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'qwerty',
           testDuration: '30',
           showKeyboard: true,
+          theme: 'system',
         },
       } as User
 
       // Mock slow API response
-      mockPayloadFetch.mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({
-          ok: true,
-          json: () => Promise.resolve({ doc: mockAuth.user }),
-        }), 100))
+      mockPayloadFetch.mockImplementation(
+        () =>
+          new Promise(resolve =>
+            setTimeout(
+              () =>
+                resolve({
+                  ok: true,
+                  json: () => Promise.resolve({ doc: mockAuth.user }),
+                }),
+              100,
+            ),
+          ),
       )
 
       const { result } = renderHook(() => usePreferences())
@@ -559,6 +598,7 @@ describe('usePreferences hook', () => {
           keyboardLayout: 'azerty',
           testDuration: '60',
           showKeyboard: false,
+          theme: 'dark',
         })
       })
 

@@ -13,6 +13,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   keyboardLayout: 'qwerty',
   testDuration: '30',
   showKeyboard: true,
+  theme: 'system',
 }
 
 /**
@@ -40,12 +41,12 @@ export class PreferenceStorage {
       if (!stored) return null
 
       const parsed = JSON.parse(stored)
-      
+
       // Validate the stored preferences
       if (this.isValidPreferences(parsed)) {
         return parsed
       }
-      
+
       // If stored preferences are invalid, clear them
       this.clearLocalStorage()
       return null
@@ -95,7 +96,8 @@ export class PreferenceStorage {
       preferences.language === DEFAULT_PREFERENCES.language &&
       preferences.keyboardLayout === DEFAULT_PREFERENCES.keyboardLayout &&
       preferences.testDuration === DEFAULT_PREFERENCES.testDuration &&
-      preferences.showKeyboard === DEFAULT_PREFERENCES.showKeyboard
+      preferences.showKeyboard === DEFAULT_PREFERENCES.showKeyboard &&
+      preferences.theme === DEFAULT_PREFERENCES.theme
     )
   }
 }
@@ -117,7 +119,7 @@ export function usePreferences() {
     if (user) {
       // Authenticated user - use database preferences
       setPreferences(user.preferences)
-      
+
       // Check for guest preferences to migrate
       const guestPreferences = PreferenceStorage.loadFromLocalStorage()
       if (guestPreferences && PreferenceStorage.areDefaultPreferences(user.preferences)) {
@@ -132,7 +134,7 @@ export function usePreferences() {
       const storedPreferences = PreferenceStorage.loadFromLocalStorage()
       setPreferences(storedPreferences || DEFAULT_PREFERENCES)
     }
-    
+
     setInitialized(true)
   }, [user, authLoading])
 
@@ -142,31 +144,33 @@ export function usePreferences() {
   const migrateGuestPreferences = async (authenticatedUser: User, guestPrefs: UserPreferences) => {
     try {
       setLoading(true)
-      
+
       // Update user preferences in database
-      const response = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL || ''}/api/users/${authenticatedUser.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_CMS_URL || ''}/api/users/${authenticatedUser.id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            preferences: guestPrefs,
+          }),
         },
-        credentials: 'include',
-        body: JSON.stringify({
-          preferences: guestPrefs,
-        }),
-      })
+      )
 
       if (!response.ok) {
         throw new Error(`Failed to migrate preferences: ${response.status}`)
       }
 
       const { doc: updatedUser } = await response.json()
-      
+
       // Update local state with migrated preferences
       setPreferences(updatedUser.preferences)
-      
+
       // Clear guest preferences
       PreferenceStorage.clearLocalStorage()
-      
     } catch (error) {
       console.error('Failed to migrate guest preferences:', error)
       // On migration failure, still clear localStorage to avoid confusion
@@ -180,48 +184,54 @@ export function usePreferences() {
   /**
    * Update preferences (handles both guest and authenticated users)
    */
-  const updatePreferences = useCallback(async (newPreferences: UserPreferences) => {
-    // Validate preferences first - this will throw if invalid
-    const validatedPreferences = PreferenceSchema.parse(newPreferences)
+  const updatePreferences = useCallback(
+    async (newPreferences: UserPreferences) => {
+      // Validate preferences first - this will throw if invalid
+      const validatedPreferences = PreferenceSchema.parse(newPreferences)
 
-    try {
-      setLoading(true)
+      try {
+        setLoading(true)
 
-      if (user) {
-        // Authenticated user - update via PayloadCMS API using standard REST endpoint
-        const response = await fetch(`${process.env.NEXT_PUBLIC_CMS_URL || ''}/api/users/${user.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            preferences: validatedPreferences,
-          }),
-        })
+        if (user) {
+          // Authenticated user - update via PayloadCMS API using standard REST endpoint
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_CMS_URL || ''}/api/users/${user.id}`,
+            {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                preferences: validatedPreferences,
+              }),
+            },
+          )
 
-        if (!response.ok) {
-          throw new Error(`Failed to update preferences: ${response.status}`)
+          if (!response.ok) {
+            throw new Error(`Failed to update preferences: ${response.status}`)
+          }
+
+          const responseData = await response.json()
+
+          // PayloadCMS might return the user directly or wrapped in { doc }
+          const updatedUser = responseData.doc || responseData
+
+          setPreferences(updatedUser.preferences)
+        } else {
+          // Guest user - save to localStorage
+          PreferenceStorage.saveToLocalStorage(validatedPreferences)
+          setPreferences(validatedPreferences)
         }
-
-        const responseData = await response.json()
-        
-        // PayloadCMS might return the user directly or wrapped in { doc }
-        const updatedUser = responseData.doc || responseData
-        
-        setPreferences(updatedUser.preferences)
-      } else {
-        // Guest user - save to localStorage
-        PreferenceStorage.saveToLocalStorage(validatedPreferences)
-        setPreferences(validatedPreferences)
+      } catch (error) {
+        console.error('Failed to update preferences:', error)
+        throw error
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('Failed to update preferences:', error)
-      throw error
-    } finally {
-      setLoading(false)
-    }
-  }, [user])
+    },
+    [user],
+  )
 
   /**
    * Reset preferences to defaults

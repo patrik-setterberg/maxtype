@@ -188,6 +188,7 @@ export interface User {
     keyboardLayout: 'qwerty' | 'azerty' | 'dvorak' | 'colemak';
     testDuration: '30' | '60' | '120';
     showKeyboard: boolean;
+    theme: 'light' | 'dark' | 'system';
   };
   updatedAt: string;
   createdAt: string;
@@ -573,6 +574,7 @@ export interface UsersSelect<T extends boolean = true> {
         keyboardLayout?: T;
         testDuration?: T;
         showKeyboard?: T;
+        theme?: T;
       };
   updatedAt?: T;
   createdAt?: T;

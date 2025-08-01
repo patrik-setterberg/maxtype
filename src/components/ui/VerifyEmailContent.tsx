@@ -29,10 +29,6 @@ export default function VerifyEmailContent() {
 
         const data = await response.json()
 
-        // Debug logging
-        console.log('Verification response status:', response.status)
-        console.log('Verification response data:', data)
-
         if (response.ok) {
           setState('success')
           setMessage(
