@@ -49,13 +49,16 @@ export const MessageAlert: React.FC<MessageAlertProps> = ({
 }) => {
   const config = messageConfig[type]
   const Icon = config.icon
+  const showTitle = title !== undefined && title !== ''
 
   return (
     <Alert className={cn('mt-8 rounded-sm', config.className, className)}>
-      <Icon size={20} color="currentColor" className={cn('mt-0.5')} />
+      <Icon size={20} color="currentColor" className={cn(showTitle ? 'mt-0.5' : '')} />
       <div>
-        <AlertTitle className={cn('font-semibold text-base')}>{title || config.title}</AlertTitle>
-        <AlertDescription className={cn('opacity-90')}>{message}</AlertDescription>
+        {showTitle && <AlertTitle className={cn('font-semibold text-base')}>{title}</AlertTitle>}
+        <AlertDescription className={cn('opacity-90', !showTitle && `text-${type}`)}>
+          {message}
+        </AlertDescription>
       </div>
     </Alert>
   )

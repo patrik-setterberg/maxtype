@@ -34,6 +34,7 @@ export default function ThemeTestPage() {
             <MessageAlert
               message="Your account has been successfully created! Please check your email to verify your account."
               type="success"
+              title="Account Created"
             />
             <MessageAlert
               message="Your typing speed has improved! You're now averaging 45 WPM."
@@ -43,6 +44,7 @@ export default function ThemeTestPage() {
             <MessageAlert
               message="Please save your work before the session expires in 5 minutes."
               type="warning"
+              title=""
             />
             <MessageAlert
               message="Invalid username or password. Please check your credentials and try again."
