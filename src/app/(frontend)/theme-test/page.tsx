@@ -23,7 +23,7 @@ export default function ThemeTestPage() {
         <div className={cn('text-center space-y-4')}>
           <h1 className={cn('text-4xl font-bold')}>MaxType Theme Showcase</h1>
           <p className={cn('text-lg text-muted-foreground')}>
-            Warm Creamy Light & Balanced Dark with Vibrant Accents
+            Warm Creamy Light & Balanced Dark with Elegant Accents
           </p>
         </div>
 
@@ -143,19 +143,19 @@ export default function ThemeTestPage() {
           <div className={cn('grid grid-cols-2 md:grid-cols-5 gap-4')}>
             <div className={cn('bg-primary p-4 rounded-lg text-primary-foreground text-center')}>
               <div className={cn('font-medium')}>Primary</div>
-              <div className={cn('text-sm opacity-80')}>Vibrant Blue-Gray</div>
+              <div className={cn('text-sm opacity-80')}>Elegant Slate</div>
             </div>
             <div className={cn('bg-success p-4 rounded-lg text-success-foreground text-center')}>
               <div className={cn('font-medium')}>Success</div>
-              <div className={cn('text-sm opacity-80')}>Forest Green</div>
+              <div className={cn('text-sm opacity-80')}>Elegant Green</div>
             </div>
             <div className={cn('bg-info p-4 rounded-lg text-info-foreground text-center')}>
               <div className={cn('font-medium')}>Info</div>
-              <div className={cn('text-sm opacity-80')}>Vibrant Info</div>
+              <div className={cn('text-sm opacity-80')}>Refined Slate</div>
             </div>
             <div className={cn('bg-warning p-4 rounded-lg text-warning-foreground text-center')}>
               <div className={cn('font-medium')}>Warning</div>
-              <div className={cn('text-sm opacity-80')}>Golden Yellow</div>
+              <div className={cn('text-sm opacity-80')}>Refined Gold</div>
             </div>
             <div
               className={cn(
@@ -163,7 +163,7 @@ export default function ThemeTestPage() {
               )}
             >
               <div className={cn('font-medium')}>Error</div>
-              <div className={cn('text-sm opacity-80')}>Coral Red</div>
+              <div className={cn('text-sm opacity-80')}>Elegant Coral</div>
             </div>
           </div>
         </div>

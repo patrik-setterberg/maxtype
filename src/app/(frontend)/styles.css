@@ -16,8 +16,8 @@
   --popover: oklch(0.99 0.003 50);
   --popover-foreground: oklch(0.23 0.008 30);
 
-  /* Vibrant warm blue-gray accent */
-  --primary: oklch(0.55 0.06 230);
+  /* Elegant refined slate accent */
+  --primary: oklch(0.52 0.03 250);
   --primary-foreground: oklch(0.99 0.003 50);
 
   /* Light secondary with warm undertones */
@@ -39,36 +39,36 @@
   /* Warm borders and inputs */
   --border: oklch(0.88 0.008 60);
   --input: oklch(0.98 0.004 55);
-  --ring: oklch(0.55 0.06 230);
+  --ring: oklch(0.52 0.03 250);
 
-  /* Vibrant warm message colors */
-  --success: oklch(0.58 0.15 145);
+  /* Elegant sophisticated message colors */
+  --success: oklch(0.55 0.08 160);
   --success-foreground: oklch(0.99 0.003 50);
-  --warning: oklch(0.65 0.18 75);
+  --warning: oklch(0.6 0.1 85);
   --warning-foreground: oklch(0.23 0.008 30);
-  --info: oklch(0.55 0.06 230);
+  --info: oklch(0.52 0.03 250);
   --info-foreground: oklch(0.99 0.003 50);
-  --error: oklch(0.6 0.18 20);
+  --error: oklch(0.58 0.1 25);
   --error-foreground: oklch(0.99 0.003 50);
 
-  /* Vibrant warm chart colors */
-  --chart-1: oklch(0.55 0.06 230);
-  --chart-2: oklch(0.58 0.15 145);
-  --chart-3: oklch(0.58 0.08 210);
-  --chart-4: oklch(0.65 0.18 75);
-  --chart-5: oklch(0.6 0.18 20);
+  /* Elegant sophisticated chart colors */
+  --chart-1: oklch(0.52 0.03 250);
+  --chart-2: oklch(0.55 0.08 160);
+  --chart-3: oklch(0.55 0.05 200);
+  --chart-4: oklch(0.6 0.1 85);
+  --chart-5: oklch(0.58 0.1 25);
 
   --radius: 0.625rem;
 
   /* Warm sidebar with creamy tones */
   --sidebar: oklch(0.94 0.006 55);
   --sidebar-foreground: oklch(0.23 0.008 30);
-  --sidebar-primary: oklch(0.55 0.06 230);
+  --sidebar-primary: oklch(0.52 0.03 250);
   --sidebar-primary-foreground: oklch(0.99 0.003 50);
   --sidebar-accent: oklch(0.94 0.005 55);
   --sidebar-accent-foreground: oklch(0.23 0.008 30);
   --sidebar-border: oklch(0.88 0.008 60);
-  --sidebar-ring: oklch(0.55 0.06 230);
+  --sidebar-ring: oklch(0.52 0.03 250);
 }
 /* /Added by shadcn/ui */
 
@@ -126,8 +126,8 @@ input:is(:-webkit-autofill, :autofill) {
   --popover: oklch(0.27 0.006 255);
   --popover-foreground: oklch(0.9 0.003 240);
 
-  /* Vibrant blue-gray primary for dark theme */
-  --primary: oklch(0.65 0.08 235);
+  /* Elegant refined slate primary for dark theme */
+  --primary: oklch(0.62 0.04 250);
   --primary-foreground: oklch(0.23 0.005 260);
 
   /* Medium balanced charcoal secondary */
@@ -149,34 +149,34 @@ input:is(:-webkit-autofill, :autofill) {
   /* Balanced charcoal borders and inputs */
   --border: oklch(0.4 0.008 255);
   --input: oklch(0.3 0.006 260);
-  --ring: oklch(0.65 0.08 235);
+  --ring: oklch(0.62 0.04 250);
 
-  /* Vibrant message colors for balanced charcoal theme */
-  --success: oklch(0.65 0.18 145);
+  /* Elegant sophisticated message colors for dark theme */
+  --success: oklch(0.6 0.1 160);
   --success-foreground: oklch(0.23 0.005 260);
-  --warning: oklch(0.72 0.2 75);
+  --warning: oklch(0.65 0.12 85);
   --warning-foreground: oklch(0.23 0.005 260);
-  --info: oklch(0.65 0.08 235);
+  --info: oklch(0.62 0.04 250);
   --info-foreground: oklch(0.23 0.005 260);
-  --error: oklch(0.68 0.2 20);
+  --error: oklch(0.62 0.12 25);
   --error-foreground: oklch(0.23 0.005 260);
 
-  /* Vibrant chart colors for balanced dark theme */
-  --chart-1: oklch(0.65 0.08 235);
-  --chart-2: oklch(0.65 0.18 145);
-  --chart-3: oklch(0.65 0.1 215);
-  --chart-4: oklch(0.72 0.2 75);
-  --chart-5: oklch(0.68 0.2 20);
+  /* Elegant sophisticated chart colors for dark theme */
+  --chart-1: oklch(0.62 0.04 250);
+  --chart-2: oklch(0.6 0.1 160);
+  --chart-3: oklch(0.6 0.06 200);
+  --chart-4: oklch(0.65 0.12 85);
+  --chart-5: oklch(0.62 0.12 25);
 
   /* Balanced dark charcoal sidebar */
   --sidebar: oklch(0.25 0.006 260);
   --sidebar-foreground: oklch(0.9 0.003 240);
-  --sidebar-primary: oklch(0.65 0.08 235);
+  --sidebar-primary: oklch(0.62 0.04 250);
   --sidebar-primary-foreground: oklch(0.23 0.005 260);
   --sidebar-accent: oklch(0.4 0.008 255);
   --sidebar-accent-foreground: oklch(0.9 0.003 240);
   --sidebar-border: oklch(0.4 0.008 255);
-  --sidebar-ring: oklch(0.65 0.08 235);
+  --sidebar-ring: oklch(0.62 0.04 250);
 }
 
 @theme inline {
