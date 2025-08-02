@@ -2,7 +2,12 @@ import React from 'react'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { cn } from '@/lib/utils'
-import { ExclamationCircle, CheckCircle, InfoCircle, ExclamationTriangle } from 'react-bootstrap-icons'
+import {
+  ExclamationCircle,
+  CheckCircle,
+  InfoCircle,
+  ExclamationTriangle,
+} from 'react-bootstrap-icons'
 
 type MessageType = 'error' | 'success' | 'warning' | 'info'
 
@@ -26,35 +31,31 @@ const messageConfig = {
   },
   warning: {
     icon: ExclamationTriangle,
-    title: 'Warning', 
+    title: 'Warning',
     className: 'border-warning text-warning bg-warning/5',
   },
   info: {
     icon: InfoCircle,
     title: 'Info',
-    className: 'border-primary text-primary bg-primary/5',
+    className: 'border-info text-info bg-info/5',
   },
 }
 
-export const MessageAlert: React.FC<MessageAlertProps> = ({ 
-  message, 
+export const MessageAlert: React.FC<MessageAlertProps> = ({
+  message,
   type = 'error',
   title,
-  className
+  className,
 }) => {
   const config = messageConfig[type]
   const Icon = config.icon
-  
+
   return (
     <Alert className={cn('mt-8 rounded-sm', config.className, className)}>
       <Icon size={20} color="currentColor" className={cn('mt-0.5')} />
       <div>
-        <AlertTitle className={cn('font-semibold text-base')}>
-          {title || config.title}
-        </AlertTitle>
-        <AlertDescription className={cn('opacity-90')}>
-          {message}
-        </AlertDescription>
+        <AlertTitle className={cn('font-semibold text-base')}>{title || config.title}</AlertTitle>
+        <AlertDescription className={cn('opacity-90')}>{message}</AlertDescription>
       </div>
     </Alert>
   )

@@ -7,18 +7,23 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 export default function ThemeTestPage() {
   return (
     <div className={cn('min-h-screen p-8 space-y-8')}>
       <div className={cn('max-w-4xl mx-auto space-y-12')}>
-        
         {/* Header */}
         <div className={cn('text-center space-y-4')}>
           <h1 className={cn('text-4xl font-bold')}>MaxType Theme Showcase</h1>
           <p className={cn('text-lg text-muted-foreground')}>
-            Warm Slate Theme with Honey Amber Accents
+            Warm Creamy Light & Balanced Dark with Vibrant Accents
           </p>
         </div>
 
@@ -26,20 +31,20 @@ export default function ThemeTestPage() {
         <div className={cn('space-y-6')}>
           <h2 className={cn('text-2xl font-semibold')}>Message Alerts</h2>
           <div className={cn('grid gap-4')}>
-            <MessageAlert 
+            <MessageAlert
               message="Your account has been successfully created! Please check your email to verify your account."
               type="success"
             />
-            <MessageAlert 
+            <MessageAlert
               message="Your typing speed has improved! You're now averaging 45 WPM."
               type="info"
               title="Progress Update"
             />
-            <MessageAlert 
+            <MessageAlert
               message="Please save your work before the session expires in 5 minutes."
               type="warning"
             />
-            <MessageAlert 
+            <MessageAlert
               message="Invalid username or password. Please check your credentials and try again."
               type="error"
             />
@@ -54,7 +59,7 @@ export default function ThemeTestPage() {
               <Label htmlFor="username">Username</Label>
               <Input id="username" placeholder="Enter your username" />
             </div>
-            
+
             <div className={cn('grid gap-2')}>
               <Label htmlFor="language">Language</Label>
               <Select>
@@ -94,9 +99,7 @@ export default function ThemeTestPage() {
           <div className={cn('grid md:grid-cols-2 gap-6')}>
             <div className={cn('bg-card p-6 rounded-lg border')}>
               <h3 className={cn('text-lg font-semibold mb-2')}>Typing Statistics</h3>
-              <p className={cn('text-muted-foreground mb-4')}>
-                Your recent performance metrics
-              </p>
+              <p className={cn('text-muted-foreground mb-4')}>Your recent performance metrics</p>
               <div className={cn('space-y-2')}>
                 <div className={cn('flex justify-between')}>
                   <span>Words per minute:</span>
@@ -115,9 +118,7 @@ export default function ThemeTestPage() {
 
             <div className={cn('bg-card p-6 rounded-lg border')}>
               <h3 className={cn('text-lg font-semibold mb-2')}>User Preferences</h3>
-              <p className={cn('text-muted-foreground mb-4')}>
-                Customize your typing experience
-              </p>
+              <p className={cn('text-muted-foreground mb-4')}>Customize your typing experience</p>
               <div className={cn('space-y-3')}>
                 <div className={cn('flex justify-between items-center')}>
                   <span>Language:</span>
@@ -139,26 +140,33 @@ export default function ThemeTestPage() {
         {/* Color Palette Display */}
         <div className={cn('space-y-6')}>
           <h2 className={cn('text-2xl font-semibold')}>Color Palette</h2>
-          <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4')}>
+          <div className={cn('grid grid-cols-2 md:grid-cols-5 gap-4')}>
             <div className={cn('bg-primary p-4 rounded-lg text-primary-foreground text-center')}>
               <div className={cn('font-medium')}>Primary</div>
-              <div className={cn('text-sm opacity-80')}>Honey Amber</div>
+              <div className={cn('text-sm opacity-80')}>Vibrant Blue-Gray</div>
             </div>
             <div className={cn('bg-success p-4 rounded-lg text-success-foreground text-center')}>
               <div className={cn('font-medium')}>Success</div>
-              <div className={cn('text-sm opacity-80')}>Sage Green</div>
+              <div className={cn('text-sm opacity-80')}>Forest Green</div>
+            </div>
+            <div className={cn('bg-info p-4 rounded-lg text-info-foreground text-center')}>
+              <div className={cn('font-medium')}>Info</div>
+              <div className={cn('text-sm opacity-80')}>Vibrant Info</div>
             </div>
             <div className={cn('bg-warning p-4 rounded-lg text-warning-foreground text-center')}>
               <div className={cn('font-medium')}>Warning</div>
-              <div className={cn('text-sm opacity-80')}>Warm Amber</div>
+              <div className={cn('text-sm opacity-80')}>Golden Yellow</div>
             </div>
-            <div className={cn('bg-destructive p-4 rounded-lg text-destructive-foreground text-center')}>
+            <div
+              className={cn(
+                'bg-destructive p-4 rounded-lg text-destructive-foreground text-center',
+              )}
+            >
               <div className={cn('font-medium')}>Error</div>
-              <div className={cn('text-sm opacity-80')}>Terracotta</div>
+              <div className={cn('text-sm opacity-80')}>Coral Red</div>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   )
