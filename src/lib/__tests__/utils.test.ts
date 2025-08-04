@@ -54,7 +54,7 @@ describe('Email validation utilities', () => {
       // These should be treated as emails
       expect(isEmailInput('user@example.com')).toBe(true)
       expect(isEmailInput('test@domain.org')).toBe(true)
-      
+
       // These should be treated as usernames
       expect(isEmailInput('username')).toBe(false)
       expect(isEmailInput('user123')).toBe(false)
@@ -83,21 +83,45 @@ describe('Auth error message utilities', () => {
     it('should handle login errors specifically', () => {
       // Verification error
       let result = getAuthErrorMessage(400, { message: 'Please verify your email' }, 'login')
-      expect(result).toBe('Please verify your email address before logging in. Check your inbox for the verification link.')
+      expect(result).toBe(
+        'Please verify your email address before logging in. Check your inbox for the verification link.',
+      )
 
-      // Invalid credentials
-      result = getAuthErrorMessage(401, { message: 'Incorrect username or password' }, 'login')
-      expect(result).toBe('The username/email or password you entered is incorrect. Please check your credentials and try again.')
+      // Invalid credentials - structured error type (PayloadCMS actual behavior)
+      result = getAuthErrorMessage(
+        401,
+        {
+          name: 'AuthenticationError',
+          type: 'AuthenticationError',
+          message: 'The username or password provided is incorrect.',
+        },
+        'login',
+      )
+      expect(result).toBe(
+        'The username/email or password you entered is incorrect. Please check your credentials and try again.',
+      )
 
-      // Account locked
-      result = getAuthErrorMessage(400, { message: 'Account locked due to failed attempts' }, 'login')
-      expect(result).toBe('Your account has been temporarily locked due to multiple failed login attempts. Please try again later or reset your password.')
+      // Account locked - PayloadCMS structured error type
+      result = getAuthErrorMessage(
+        401,
+        {
+          name: 'LockedAuth',
+          type: 'LockedAuth',
+          message: 'This user is locked due to having too many failed login attempts.',
+        },
+        'login',
+      )
+      expect(result).toBe(
+        'Your account has been temporarily locked due to multiple failed login attempts. Please try again later or reset your password.',
+      )
     })
 
     it('should handle signup errors specifically', () => {
       // Email already exists
       let result = getAuthErrorMessage(400, { message: 'Email already exists' }, 'signup')
-      expect(result).toBe('This email address is already registered. Please use a different email or try logging in instead.')
+      expect(result).toBe(
+        'This email address is already registered. Please use a different email or try logging in instead.',
+      )
 
       // Username already exists
       result = getAuthErrorMessage(400, { message: 'Username already taken' }, 'signup')
@@ -111,7 +135,9 @@ describe('Auth error message utilities', () => {
     it('should handle forgot password errors specifically', () => {
       // User not found
       let result = getAuthErrorMessage(404, { message: 'User not found' }, 'forgot-password')
-      expect(result).toBe('No account found with that username or email address. Please check and try again.')
+      expect(result).toBe(
+        'No account found with that username or email address. Please check and try again.',
+      )
 
       // Rate limiting
       result = getAuthErrorMessage(429, { message: 'Too many requests' }, 'forgot-password')
@@ -121,21 +147,75 @@ describe('Auth error message utilities', () => {
     it('should handle reset password errors specifically', () => {
       // Expired token
       let result = getAuthErrorMessage(400, { message: 'Token expired' }, 'reset-password')
-      expect(result).toBe('This password reset link has expired or is invalid. Please request a new password reset.')
+      expect(result).toBe(
+        'This password reset link has expired or is invalid. Please request a new password reset.',
+      )
 
       // Invalid token
       result = getAuthErrorMessage(400, { message: 'Invalid token' }, 'reset-password')
-      expect(result).toBe('This password reset link has expired or is invalid. Please request a new password reset.')
+      expect(result).toBe(
+        'This password reset link has expired or is invalid. Please request a new password reset.',
+      )
+    })
+
+    it('should handle change password errors specifically', () => {
+      // Incorrect current password - structured error type (PayloadCMS actual behavior)
+      let result = getAuthErrorMessage(
+        401,
+        {
+          name: 'AuthenticationError',
+          message: 'The username or password provided is incorrect.',
+        },
+        'change-password',
+      )
+      expect(result).toBe('Your current password is incorrect. Please check and try again.')
+
+      // Account locked - PayloadCMS structured error type
+      result = getAuthErrorMessage(
+        401,
+        {
+          name: 'LockedAuth',
+          message: 'This user is locked due to having too many failed login attempts.',
+        },
+        'change-password',
+      )
+      expect(result).toBe(
+        'Your account has been temporarily locked due to multiple failed attempts. Please wait 15 minutes or use the forgot password option to reset your password.',
+      )
+
+      // Generic 401 fallback
+      result = getAuthErrorMessage(401, { message: 'Some unknown auth error' }, 'change-password')
+      expect(result).toBe(
+        'Authentication failed. Please check your current password and try again.',
+      )
+
+      // Generic 403 fallback
+      result = getAuthErrorMessage(403, { message: 'Forbidden' }, 'change-password')
+      expect(result).toBe('You are not authorized to change this password. Please log in again.')
+
+      // Account locked via message content (when error type is not provided)
+      result = getAuthErrorMessage(
+        401,
+        {
+          errors: [
+            { message: 'This user is locked due to having too many failed login attempts.' },
+          ],
+        },
+        'change-password',
+      )
+      expect(result).toBe(
+        'Your account has been temporarily locked due to multiple failed attempts. Please wait 15 minutes or use the forgot password option to reset your password.',
+      )
     })
 
     it('should handle errors array format', () => {
       const response = {
-        errors: [
-          { message: 'Email already exists', field: 'email' }
-        ]
+        errors: [{ message: 'Email already exists', field: 'email' }],
       }
       const result = getAuthErrorMessage(400, response, 'signup')
-      expect(result).toBe('This email address is already registered. Please use a different email or try logging in instead.')
+      expect(result).toBe(
+        'This email address is already registered. Please use a different email or try logging in instead.',
+      )
     })
 
     it('should fallback to original message when no specific handling exists', () => {

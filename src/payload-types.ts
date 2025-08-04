@@ -192,7 +192,7 @@ export interface User {
   };
   updatedAt: string;
   createdAt: string;
-  email?: string | null;
+  email: string;
   username: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;

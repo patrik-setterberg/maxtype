@@ -21,21 +21,21 @@ export const isValidEmail = (value: string): boolean => {
   if (!value || typeof value !== 'string') {
     return false
   }
-  
+
   // Basic structure check: must have @ with content before and after
   if (!value.includes('@') || value.indexOf('@') === 0 || value.indexOf('@') === value.length - 1) {
     return false
   }
-  
+
   // Check for invalid patterns
   if (value.includes('..') || value.includes('@.') || value.includes('.@')) {
     return false
   }
-  
+
   // More comprehensive regex for email validation
   // This covers most common email formats while being reasonably permissive
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]([a-zA-Z0-9.-]*[a-zA-Z0-9])?\.[a-zA-Z]{2,}$/
-  
+
   return emailRegex.test(value)
 }
 
@@ -52,6 +52,8 @@ export const isEmailInput = (input: string): boolean => {
  */
 interface AuthErrorResponse {
   message?: string
+  name?: string // PayloadCMS error class name (e.g., 'LockedAuth', 'AuthenticationError')
+  type?: string // PayloadCMS error type (same as name)
   errors?: Array<{
     message: string
     field?: string
@@ -65,7 +67,7 @@ interface AuthErrorResponse {
 export const getAuthErrorMessage = (
   status: number,
   response: AuthErrorResponse,
-  context: 'login' | 'signup' | 'forgot-password' | 'reset-password' = 'login'
+  context: 'login' | 'signup' | 'forgot-password' | 'reset-password' | 'change-password' = 'login',
 ): string => {
   // Handle network/server errors first
   if (status >= 500) {
@@ -74,21 +76,27 @@ export const getAuthErrorMessage = (
 
   const message = response.message || response.errors?.[0]?.message || ''
   const lowerMessage = message.toLowerCase()
+  const errorType = response.name || response.type || ''
 
   // Handle specific error cases based on context
   switch (context) {
     case 'login':
+      // Handle known PayloadCMS error types
+      if (errorType === 'LockedAuth') {
+        return 'Your account has been temporarily locked due to multiple failed login attempts. Please try again later or reset your password.'
+      }
+      if (errorType === 'AuthenticationError') {
+        return 'The username/email or password you entered is incorrect. Please check your credentials and try again.'
+      }
+
+      // Handle email verification (still need message-based until we find the error type)
       if (lowerMessage.includes('verify') || lowerMessage.includes('verification')) {
         return 'Please verify your email address before logging in. Check your inbox for the verification link.'
       }
-      if (lowerMessage.includes('incorrect') || lowerMessage.includes('invalid') || status === 401) {
-        return 'The username/email or password you entered is incorrect. Please check your credentials and try again.'
-      }
-      if (lowerMessage.includes('locked') || lowerMessage.includes('attempt')) {
-        return 'Your account has been temporarily locked due to multiple failed login attempts. Please try again later or reset your password.'
-      }
-      if (lowerMessage.includes('disabled') || lowerMessage.includes('suspended')) {
-        return 'Your account has been suspended. Please contact support for assistance.'
+
+      // Generic fallback for unknown error types
+      if (status === 401) {
+        return 'Authentication failed. Please check your credentials and try again.'
       }
       break
 
@@ -105,7 +113,10 @@ export const getAuthErrorMessage = (
       if (lowerMessage.includes('invalid email') || lowerMessage.includes('email format')) {
         return 'Please enter a valid email address.'
       }
-      if (lowerMessage.includes('password') && (lowerMessage.includes('short') || lowerMessage.includes('length'))) {
+      if (
+        lowerMessage.includes('password') &&
+        (lowerMessage.includes('short') || lowerMessage.includes('length'))
+      ) {
         return 'Password must be at least 6 characters long.'
       }
       break
@@ -123,8 +134,48 @@ export const getAuthErrorMessage = (
       if (lowerMessage.includes('expired') || lowerMessage.includes('invalid')) {
         return 'This password reset link has expired or is invalid. Please request a new password reset.'
       }
-      if (lowerMessage.includes('password') && (lowerMessage.includes('short') || lowerMessage.includes('length'))) {
+      if (
+        lowerMessage.includes('password') &&
+        (lowerMessage.includes('short') || lowerMessage.includes('length'))
+      ) {
         return 'Password must be at least 6 characters long.'
+      }
+      break
+
+    case 'change-password':
+      // Handle known PayloadCMS error types
+      if (errorType === 'LockedAuth') {
+        return 'Your account has been temporarily locked due to multiple failed attempts. Please wait 15 minutes or use the forgot password option to reset your password.'
+      }
+      if (errorType === 'AuthenticationError') {
+        return 'Your current password is incorrect. Please check and try again.'
+      }
+
+      // Handle account lockout based on message content (fallback when error type isn't provided)
+      if (
+        lowerMessage.includes('locked') ||
+        lowerMessage.includes('too many failed login attempts')
+      ) {
+        return 'Your account has been temporarily locked due to multiple failed attempts. Please wait 15 minutes or use the forgot password option to reset your password.'
+      }
+
+      // Handle validation errors (keeping message-based until we find ValidationError type)
+      if (
+        lowerMessage.includes('password') &&
+        (lowerMessage.includes('short') || lowerMessage.includes('length'))
+      ) {
+        return 'New password must be at least 6 characters long.'
+      }
+      if (lowerMessage.includes('same') || lowerMessage.includes('different')) {
+        return 'Your new password must be different from your current password.'
+      }
+
+      // Generic fallback
+      if (status === 401) {
+        return 'Authentication failed. Please check your current password and try again.'
+      }
+      if (status === 403) {
+        return 'You are not authorized to change this password. Please log in again.'
       }
       break
   }
@@ -132,4 +183,3 @@ export const getAuthErrorMessage = (
   // Fallback to original message or generic error
   return message || 'An unexpected error occurred. Please try again.'
 }
-

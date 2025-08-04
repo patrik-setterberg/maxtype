@@ -120,9 +120,41 @@ export const ResetPasswordSchema = z
     path: ['password-repeat'],
   })
 
+/**
+ * Change password form validation schema
+ * Used by ChangePasswordForm component
+ * Requires current password and new password with confirmation
+ */
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string({
+        required_error: 'Current password is required.',
+      })
+      .min(1, { message: 'Current password is required.' }),
+    newPassword: z
+      .string({
+        required_error: 'New password is required.',
+      })
+      .min(6, { message: 'New password must be at least 6 characters.' })
+      .max(50, { message: 'New password must be at most 50 characters.' }),
+    'newPassword-repeat': z.string({
+      required_error: 'New password confirmation is required.',
+    }),
+  })
+  .refine(data => data.newPassword === data['newPassword-repeat'], {
+    message: 'New passwords do not match',
+    path: ['newPassword-repeat'],
+  })
+  .refine(data => data.currentPassword !== data.newPassword, {
+    message: 'New password must be different from current password',
+    path: ['newPassword'],
+  })
+
 // Type exports for TypeScript
 export type LoginFormData = z.infer<typeof LoginSchema>
 export type SignupFormData = z.infer<typeof SignupSchema>
 export type UserPreferences = z.infer<typeof PreferenceSchema>
 export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordSchema>
 export type ResetPasswordFormData = z.infer<typeof ResetPasswordSchema>
+export type ChangePasswordFormData = z.infer<typeof ChangePasswordSchema>

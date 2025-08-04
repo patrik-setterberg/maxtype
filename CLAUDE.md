@@ -623,3 +623,18 @@ await setTheme('dark')
 # Tasks
 
 ## Revisit themes (color palette)
+## Allow regular users to change their password
+- Add link on the profile page to a form where users can update their password.
+- Users must enter their old password, new password, repeat new password.
+
+## Add typing test relevant data fields to User collection
+## Statistics dashboard for admins
+
+## Bug: Registration of non-unique email address
+When attempting to register a new account, if the username is unique, but the email address is not, the server says:
+```[15:21:08] INFO: The following field is invalid: username
+POST /api/users 400 in 430ms```
+and the frontend says:
+This username is already taken. Please choose a different username.
+
+It should instead complain about the email address.

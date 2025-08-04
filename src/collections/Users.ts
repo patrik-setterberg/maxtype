@@ -10,7 +10,7 @@ export const Users: CollectionConfig = {
     lockTime: 15 * 60 * 1000, // Unlock after 15 minutes (in milliseconds)
     loginWithUsername: {
       allowEmailLogin: true, // Allow login with both username AND email
-      requireEmail: false, // Email is not required (default: false)
+      requireEmail: false, // Keep this false to maintain compatibility
     },
     forgotPassword: {
       expiration: 3600000, // 1 hour in milliseconds
@@ -349,7 +349,14 @@ export const Users: CollectionConfig = {
     delete: ({ req: { user } }) => user?.collection === 'admins',
   },
   fields: [
-    // Email added by default
+    // Explicitly define email field to ensure proper validation
+    {
+      name: 'email',
+      type: 'email',
+      required: true,
+      unique: true,
+      index: true, // Add database index for better performance
+    },
     {
       name: 'username',
       type: 'text',
