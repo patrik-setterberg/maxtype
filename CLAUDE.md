@@ -93,6 +93,7 @@
 - **Flexible Login**: Users can login with either username or email address
 - **Forgot Password**: Complete password reset flow with email links
 - **Password Reset**: Secure token-based password reset (1-hour expiration)
+- **Password Change**: Secure password change with current password verification
 - **Account Security**: Rate limiting with account lockout (5 failed attempts, 15-minute lockout)
 
 ## Authentication Components
@@ -101,6 +102,16 @@
 - `SignupForm`: Registration with email verification requirement
 - `ForgotPasswordForm`: Smart detection of email vs username input
 - `ResetPasswordForm`: Token-based password reset with expiry handling
+- `ChangePasswordForm`: Two-step password verification (current + new password)
+
+## Password Change Implementation
+
+- **Security**: Two-step verification using PayloadCMS login endpoint to validate current password
+- **Location**: `/change-password` route with form, linked from profile page
+- **Validation**: Zod schema with password matching and difference validation
+- **UX**: Inline success state (form replaced with confirmation message)
+- **Error Handling**: Account lockout detection with appropriate user guidance
+- **Testing**: Comprehensive test coverage including edge cases and error scenarios
 
 ## Validation & Error Handling
 
@@ -623,18 +634,30 @@ await setTheme('dark')
 # Tasks
 
 ## Revisit themes (color palette)
-## Allow regular users to change their password
-- Add link on the profile page to a form where users can update their password.
-- Users must enter their old password, new password, repeat new password.
+
+## ✅ Allow regular users to change their password (COMPLETED)
+
+- ✅ Add link on the profile page to a form where users can update their password.
+- ✅ Users must enter their old password, new password, repeat new password.
+- ✅ Two-step verification implemented for security
+- ✅ Comprehensive error handling and testing
 
 ## Add typing test relevant data fields to User collection
+
 ## Statistics dashboard for admins
 
-## Bug: Registration of non-unique email address
-When attempting to register a new account, if the username is unique, but the email address is not, the server says:
-```[15:21:08] INFO: The following field is invalid: username
-POST /api/users 400 in 430ms```
-and the frontend says:
-This username is already taken. Please choose a different username.
+## 🐛 PayloadCMS Validation Bug (Known Issue)
 
-It should instead complain about the email address.
+**Status**: Investigated but not fixed - PayloadCMS server-side issue
+
+When attempting to register with a unique username but existing email address, PayloadCMS incorrectly reports:
+
+```
+[INFO] The following field is invalid: username
+```
+
+**Root Cause**: PayloadCMS 3.27.0 validation logic bug with `loginWithUsername` configuration  
+**Impact**: Users see incorrect "username taken" message instead of "email already registered"  
+**Investigation**: Server correctly receives both username/email but internal validation reporting is wrong  
+**Workaround Attempted**: Client-side error correction proved unreliable  
+**Solution**: Reverted to clean error handling, documented for future PayloadCMS updates
