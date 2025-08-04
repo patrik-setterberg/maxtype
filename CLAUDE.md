@@ -246,6 +246,94 @@ src/
 - **Lucide React Icons**: Icon library
 - **React Bootstrap Icons**: Additional icon set
 
+### MessageAlert Component (`src/components/ui/MessageAlert.tsx`)
+
+Enhanced alert component for displaying messages with optional titles and proper variant styling:
+
+**Features:**
+
+- **Optional Title**: `title?: string` prop - can be omitted for simpler messages
+- **Conditional Text Color**: When no title is provided, message text adopts the variant color (`text-error`, `text-warning`, etc.)
+- **Smart Icon Positioning**: Icon margin-top only applies when title is present
+- **Four Message Types**: `error`, `success`, `warning`, `info` with appropriate icons and colors
+
+**Usage Patterns:**
+
+```typescript
+// With title (standard usage)
+<MessageAlert
+  message="Please check your credentials and try again"
+  type="error"
+  title="Login Failed"
+/>
+
+// Without title (simplified usage - message text becomes colored)
+<MessageAlert
+  message="Account created successfully!"
+  type="success"
+/>
+
+// Empty title also triggers no-title mode
+<MessageAlert
+  message="Session expires in 5 minutes"
+  type="warning"
+  title=""
+/>
+```
+
+**Implementation Details:**
+
+- Uses React Bootstrap Icons for consistent iconography
+- Integrates with theme system for elegant colors in both light and dark modes
+- Backward compatible - existing usage without title prop continues to work
+- Conditional styling based on `showTitle = title !== undefined && title !== ''`
+
+### Header Navigation (`src/components/ui/Header.tsx`)
+
+Clean header layout with minimal, focused navigation:
+
+**Header Structure:**
+
+- **Logo** (MaxType with MT badge) - Links to home page
+- **Right Navigation:** Theme Selector → Settings Button → User Menu (3 buttons total)
+
+**Settings Button:**
+
+- Always visible to all users (authenticated and guests)
+- Gear icon with hover states and accessibility support
+- Direct link to `/settings` page
+
+### UserMenu Component (`src/components/ui/UserMenu.tsx`)
+
+Consolidated user account management in a popover triggered by user icon:
+
+**Features:**
+
+- **Controlled State**: Uses `useState` with `open`/`onOpenChange` for proper popover control
+- **Auto-Close**: All navigation links close the popover via `handleLinkClick()` handler
+- **User Avatar**: Circular badge with first letter of username for authenticated users
+
+**For Authenticated Users:**
+
+- User info header with avatar, username, and email (truncated)
+- Profile link (`/profile`)
+- Statistics link (`/statistics`)
+- Sign Out button (calls `handleLogout()` which closes popover before logout)
+
+**For Guest Users:**
+
+- Welcome message encouraging account creation
+- Login link (`/login`)
+- Sign Up link (`/signup`) - highlighted in primary color
+- No settings link (moved to header)
+
+**Technical Details:**
+
+- Popover width: `w-48`, right-aligned with `sideOffset={8}`
+- Uses Radix UI Popover with proper accessibility
+- Icons from Lucide React, consistent hover states
+- Integrates with `useAuth()` hook for authentication state
+
 # Essential Utility Functions
 
 ## Core Utilities (src/lib/utils.ts)
