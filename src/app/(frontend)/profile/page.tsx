@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import { CircleUserRound } from 'lucide-react'
+import DeleteAccountButton from '@/components/ui/DeleteAccountButton'
 
 export default function ProfilePage() {
   const { user, loading, isAuthenticated } = useAuth()
@@ -86,15 +87,33 @@ export default function ProfilePage() {
         <div className={cn('bg-card border rounded-lg p-6 mt-6')}>
           <h2 className={cn('text-xl font-semibold mb-4')}>Account Actions</h2>
 
-          <div>
-            <Link
-              href="/change-password"
-              className={cn(
-                'inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors',
-              )}
-            >
-              Change Password →
-            </Link>
+          <div className={cn('space-y-4')}>
+            <div className={cn('flex items-center justify-between')}>
+              <div className={cn('flex-1')}>
+                <p className={cn('text-sm font-medium text-foreground mb-1')}>Change Password</p>
+                <p className={cn('text-xs text-muted-foreground')}>Update your account password</p>
+              </div>
+              <Link
+                href="/change-password"
+                className={cn(
+                  'inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 transition-colors w-40',
+                )}
+              >
+                Change Password
+              </Link>
+            </div>
+
+            <div className={cn('pt-4')}>
+              <div className={cn('flex items-center justify-between')}>
+                <div className={cn('flex-1')}>
+                  <p className={cn('text-sm font-medium text-foreground mb-1')}>Delete Account</p>
+                  <p className={cn('text-xs text-muted-foreground')}>
+                    Permanently delete your account and all associated data
+                  </p>
+                </div>
+                <DeleteAccountButton />
+              </div>
+            </div>
           </div>
         </div>
 

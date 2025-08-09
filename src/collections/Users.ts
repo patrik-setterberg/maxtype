@@ -345,8 +345,12 @@ export const Users: CollectionConfig = {
       if (user?.collection === 'users') return { id: { equals: user.id } }
       return false
     },
-    // Only admins can delete users
-    delete: ({ req: { user } }) => user?.collection === 'admins',
+    // Users can delete their own account, admins can delete any user
+    delete: ({ req: { user } }) => {
+      if (user?.collection === 'admins') return true
+      if (user?.collection === 'users') return { id: { equals: user.id } }
+      return false
+    },
   },
   fields: [
     // Explicitly define email field to ensure proper validation

@@ -68,9 +68,9 @@ For comprehensive information on specific aspects of the project, see:
 
 ## Access Patterns
 
-- Users can only read/update their own data
+- Users can only read/update/delete their own data
 - Admins have full access to all collections
-- Public signup enabled, admin-only delete permissions
+- Public signup enabled, self-service account deletion
 
 ## Missing/Future Features
 
@@ -193,7 +193,7 @@ read: ({ req: { user } }) => {
 
 ### ✅ Completed Features
 
-- **Authentication System**: Complete user registration, login, password reset/change
+- **Authentication System**: Complete user registration, login, password reset/change, account deletion
 - **Theme System**: Light/dark/system theme support with persistence
 - **User Preferences**: Guest and authenticated user preference management
 - **Component Library**: Comprehensive UI components with Radix integration
