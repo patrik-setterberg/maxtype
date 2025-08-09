@@ -210,13 +210,13 @@ read: ({ req: { user } }) => {
 - **User Preferences**: Guest and authenticated user preference management
 - **Component Library**: Comprehensive UI components with Radix integration
 
-### 🚧 Upcoming Tasks (12-Session Implementation Plan)
+### 🚧 Upcoming Tasks (17-Session Implementation Plan)
 
-**Complete typing test implementation via clean rewrite** - See [Implementation Plan](./docs/TYPING-TEST-IMPLEMENTATION.md)
+**Complete typing test implementation via clean rewrite with advanced analytics** - See [Implementation Plan](./docs/TYPING-TEST-IMPLEMENTATION.md)
 
 **Phase 1: Foundation & Data Setup**
 
-- Task 1: PayloadCMS User Collection Updates
+- Task 1: PayloadCMS Collections Setup (TypingTestResults + Users)
 - Task 2: Word Data and Content Management
 - Task 3: Core Algorithms and Utilities
 
@@ -230,7 +230,7 @@ read: ({ req: { user } }) => {
 
 - Task 7: Visual Keyboard Component
 - Task 8: Results and Scoring System
-- Task 9: Statistics and History Tracking
+- Task 9: User Statistics and History Tracking
 
 **Phase 4: Integration & Polish**
 
@@ -238,9 +238,19 @@ read: ({ req: { user } }) => {
 - Task 11: Mobile Responsiveness and Accessibility
 - Task 12: Testing Coverage and Performance Optimization
 
+**Phase 5: Advanced Features & Analytics**
+
+- Task 13: Leaderboard System
+- Task 14: Admin Analytics Dashboard
+- Task 15: Anonymous User Session Management
+
+**Phase 6: Language & Localization Enhancements**
+
+- Task 16: Enhanced Language Support Implementation (6 languages with special characters)
+- Task 17: Advanced Keyboard Layout System (8 layouts with language correlations)
+
 **Other Tasks**:
 
-- **Statistics dashboard for admins**: Administrative reporting features
 - **Revisit themes (color palette)**: Refine visual design to match typing test UI
 
 ## important-instruction-reminders

@@ -13,25 +13,56 @@ Complete rewrite of the typing test functionality using modern React 19 patterns
 - Single `useTypingTest()` hook for all logic
 - High-precision timing with `performance.now()`
 - TailwindCSS styling with MaxType's OKLCH colors
-- Native PayloadCMS integration
+- Native PayloadCMS integration with separate TypingTestResults collection
+- Anonymous and authenticated user support
+- Rich analytics and leaderboard capabilities
 - Accessibility-first design
 - Mobile-responsive from day one
 - Comprehensive test coverage
 
-## Task Breakdown (12 Sessions)
+## Enhanced Architecture
+
+### Data Storage Strategy
+
+**TypingTestResults Collection** (Standalone):
+
+- Stores ALL typing test results (authenticated + anonymous users)
+- Enables rich analytics, leaderboards, and usage tracking
+- Supports advanced features like word difficulty analysis
+- Scales efficiently with thousands of test results
+
+**Users Collection** (Summary Data):
+
+- User preferences for typing tests
+- Computed summary statistics (derived from TypingTestResults)
+- Personal bests and achievement tracking
+
+**Benefits**:
+
+- Track anonymous user behavior and trends
+- Analyze popular languages, difficult words, usage patterns
+- Build global leaderboards and competition features
+- Enable A/B testing of different content or UI approaches
+- Better performance and scalability
+
+## Task Breakdown (15 Sessions)
 
 ### Phase 1: Foundation & Data Setup
 
-#### Task 1: PayloadCMS User Collection Updates
+#### Task 1: PayloadCMS Collections Setup
 
 **Complexity**: Medium
 **Prerequisites**: Understanding of PayloadCMS collections
 **Deliverables**:
 
-- Add typing test fields to User collection schema
-- Test results storage structure (WPM, accuracy, date, duration, etc.)
-- User preferences for typing tests (test length, keyboard layout, language)
-- Migration strategy for existing users
+- Create new TypingTestResults collection for all test data
+- Add typing test preferences to existing User collection
+- Add computed summary statistics to User collection
+- Anonymous user session tracking setup
+
+**Files to Create**:
+
+- `src/collections/TypingTestResults.ts`
 
 **Files to Modify**:
 
@@ -39,12 +70,29 @@ Complete rewrite of the typing test functionality using modern React 19 patterns
 - Update Zod schemas in `src/lib/validation.ts`
 - Update TypeScript types
 
+**TypingTestResults Collection Structure**:
+
+- User ID (optional - null for anonymous users)
+- Session ID for anonymous user tracking
+- Comprehensive test metrics (WPM, accuracy, characters, words)
+- Test configuration (language, duration, keyboard layout)
+- Timestamps and metadata
+- Incorrect words list for analysis
+
+**User Collection Updates**:
+
+- Enhanced typing test preferences
+- Computed summary statistics (best WPM, average, total tests)
+- Personal achievement tracking
+
 **Acceptance Criteria**:
 
-- User collection includes typing test result fields
-- Preferences include typing-specific settings
-- PayloadCMS admin panel shows new fields
+- TypingTestResults collection created with proper access controls
+- User preferences include typing-specific settings
+- Anonymous user results can be stored and tracked
+- PayloadCMS admin panel shows both collections properly
 - Type safety maintained throughout
+- Performance optimized with proper indexing
 
 ---
 
@@ -54,24 +102,64 @@ Complete rewrite of the typing test functionality using modern React 19 patterns
 **Prerequisites**: Task 1 completed
 **Deliverables**:
 
-- Create word datasets (English 1k, additional languages)
-- Implement efficient word loading system
+- Create comprehensive word datasets for all supported languages
+- Implement efficient word loading system with language switching
 - Custom text support for advanced users
 - Word difficulty classification system
+- Language-specific keyboard layout definitions
 
 **Files to Create**:
 
 - `src/lib/word-data/` directory structure
 - `src/lib/word-data/english-1k.ts`
+- `src/lib/word-data/spanish-1k.ts`
+- `src/lib/word-data/french-1k.ts`
+- `src/lib/word-data/german-1k.ts`
+- `src/lib/word-data/swedish-1k.ts`
+- `src/lib/word-data/portuguese-1k.ts`
 - `src/lib/word-data/word-loader.ts`
 - `src/lib/word-data/custom-text.ts`
+- `src/lib/keyboard-layouts/layout-definitions.ts`
+
+**Enhanced Language Support**:
+
+**Supported Languages**:
+
+- English (en) - 1000+ common words
+- Spanish (es) - 1000+ common words with proper accents
+- French (fr) - 1000+ common words with accents (é, è, à, ç, etc.)
+- German (de) - 1000+ common words with umlauts (ä, ö, ü, ß)
+- Swedish (sv) - 1000+ common words with Swedish characters (å, ä, ö)
+- Portuguese (pt) - 1000+ common words with Portuguese accents (ã, ç, é, etc.)
+
+**Keyboard Layout Definitions**:
+
+- QWERTY (US English) - Standard US layout
+- QWERTY (Swedish) - Swedish-specific keys (å, ä, ö)
+- AZERTY (French) - French layout with proper accent key placement
+- QWERTZ (German) - German layout with ü, ö, ä, ß placement
+- QWERTY (Spanish) - Spanish layout with ñ and accent support
+- QWERTY (Portuguese) - Portuguese layout with ã, ç, and accent keys
+- DVORAK (US) - Alternative US layout
+- COLEMAK - Alternative optimized layout
+
+**Word Dataset Features**:
+
+- Frequency-based word selection (most common words first)
+- Proper accent and special character inclusion
+- Difficulty classification (beginner, intermediate, advanced)
+- Category tagging (nouns, verbs, adjectives, etc.)
+- Cultural appropriateness filtering
 
 **Acceptance Criteria**:
 
 - Efficient word loading with no memory leaks
-- Support for multiple languages
+- Complete support for all 6 languages with proper special characters
+- Accurate keyboard layout definitions matching physical keyboards
 - Custom text input and validation
 - Word datasets properly typed and tested
+- Language-keyboard layout correlation logic implemented
+- Visual keyboard component works with all layouts
 
 ---
 
@@ -217,55 +305,82 @@ Complete rewrite of the typing test functionality using modern React 19 patterns
 
 #### Task 8: Results and Scoring System
 
-**Complexity**: Medium
+**Complexity**: Medium  
 **Prerequisites**: Tasks 3, 7 completed
 **Deliverables**:
 
-- Test completion modal with detailed results
-- WPM, accuracy, and error analysis
-- Results visualization (charts/graphs)
-- Results storage integration with PayloadCMS
+- Test completion modal with detailed results matching TypeThree's comprehensive display
+- WPM, accuracy, and error analysis with keyboard shortcuts (Enter/Escape to restart)
+- Results visualization (charts/graphs) showing improvement trends
+- Results storage integration with TypingTestResults collection
+- Anonymous user session tracking and result storage
+- Personal best detection and achievement notifications
 
 **Files to Create**:
 
 - `src/components/typing-test/TestResults.tsx`
 - `src/components/typing-test/ResultsChart.tsx`
 - `src/hooks/useTestResults.ts`
-- Results API integration
+- `src/api/typing-test-results.ts` (API endpoints)
+- `src/lib/typing-test/results-storage.ts`
+
+**Key Features**:
+
+- Store results for both authenticated and anonymous users
+- Generate session IDs for anonymous user tracking
+- Update user summary statistics automatically
+- Handle personal best detection and updates
+- Support for keyboard shortcuts in results screen
 
 **Acceptance Criteria**:
 
-- Accurate WPM and accuracy calculations
-- Clear results presentation with visualizations
-- Results properly stored in user account
-- Guest user results handled appropriately
+- Accurate WPM and accuracy calculations matching TypeThree algorithms
+- Clear results presentation with comprehensive statistics display
+- Results properly stored in TypingTestResults collection
+- Anonymous user results stored with session tracking
+- User summary statistics updated automatically
+- Personal best detection and celebration
+- Keyboard navigation (Enter/Escape) works in results screen
 
 ---
 
-#### Task 9: Statistics and History Tracking
+#### Task 9: User Statistics and History Tracking
 
 **Complexity**: Medium
 **Prerequisites**: Task 8 completed
 **Deliverables**:
 
-- User statistics dashboard
-- Historical performance tracking
+- User statistics dashboard aggregating data from TypingTestResults collection
+- Historical performance tracking with time-series analysis
 - Progress charts and improvement analytics
-- Personal best tracking
+- Personal best tracking with achievement system
+- Data aggregation utilities for computing user summaries
 
 **Files to Create**:
 
 - `src/components/typing-test/StatsDashboard.tsx`
 - `src/components/typing-test/ProgressChart.tsx`
+- `src/components/typing-test/PersonalBests.tsx`
 - `src/hooks/useUserStats.ts`
-- Statistics calculation utilities
+- `src/lib/typing-test/stats-aggregation.ts`
+- `src/api/user-statistics.ts`
+
+**Key Features**:
+
+- Query TypingTestResults collection for user's historical data
+- Compute rolling averages, improvement trends, consistency metrics
+- Achievement system (milestones, streaks, personal bests)
+- Detailed breakdowns by language, test length, time period
+- Export functionality for personal data analysis
 
 **Acceptance Criteria**:
 
-- Clear visualization of typing progress over time
-- Accurate personal best and average calculations
-- Performance trends and improvement suggestions
+- Clear visualization of typing progress over time from TypingTestResults data
+- Accurate personal best and rolling average calculations
+- Performance trends and improvement suggestions based on historical data
+- Achievement notifications for milestones and personal bests
 - Data export capabilities for power users
+- Efficient queries that don't impact performance with large datasets
 
 ---
 
@@ -350,6 +465,190 @@ Complete rewrite of the typing test functionality using modern React 19 patterns
 
 ---
 
+### Phase 5: Advanced Features & Analytics
+
+#### Task 13: Leaderboard System
+
+**Complexity**: High
+**Prerequisites**: Tasks 1, 8, 9 completed
+**Deliverables**:
+
+- Global leaderboards with multiple categories and time periods
+- Real-time ranking updates and competition features
+- Anonymous and authenticated user leaderboard participation
+- Leaderboard API endpoints and caching strategies
+- Anti-cheating measures and result validation
+
+**Files to Create**:
+
+- `src/components/typing-test/Leaderboards.tsx`
+- `src/components/typing-test/LeaderboardCard.tsx`
+- `src/components/typing-test/LeaderboardFilters.tsx`
+- `src/api/leaderboards.ts`
+- `src/lib/typing-test/leaderboard-logic.ts`
+- `src/hooks/useLeaderboards.ts`
+
+**Leaderboard Categories**:
+
+- Global WPM rankings (daily, weekly, monthly, all-time)
+- Language-specific leaderboards
+- Test duration categories (30s, 60s, 120s)
+- Accuracy-focused leaderboards (minimum WPM threshold)
+- Consistency rankings (lowest standard deviation)
+
+**Key Features**:
+
+- Real-time updates when users complete tests
+- Anonymous users can appear on leaderboards (with session tracking)
+- Multiple ranking algorithms (WPM, accuracy-weighted, consistency)
+- Leaderboard history and archived periods
+- User's current rank and progress tracking
+- Social features like challenging friends
+
+**Acceptance Criteria**:
+
+- Multiple leaderboard categories function correctly
+- Real-time updates work smoothly without performance issues
+- Anonymous users can participate and track their position
+- Anti-cheating measures prevent obviously invalid results
+- Leaderboards load quickly with proper caching
+- Mobile-responsive leaderboard interface
+- Users can see their ranking progress over time
+
+---
+
+#### Task 14: Admin Analytics Dashboard
+
+**Complexity**: High
+**Prerequisites**: Task 1 completed (TypingTestResults collection)
+**Deliverables**:
+
+- Comprehensive analytics dashboard for MaxType administrators
+- Usage statistics and user behavior analysis
+- Word difficulty analysis and content optimization insights
+- Performance monitoring and system health metrics
+- Data export capabilities for deeper analysis
+
+**Files to Create**:
+
+- `src/components/admin/AnalyticsDashboard.tsx`
+- `src/components/admin/UsageMetrics.tsx`
+- `src/components/admin/WordAnalysis.tsx`
+- `src/components/admin/UserBehaviorCharts.tsx`
+- `src/components/admin/SystemHealth.tsx`
+- `src/api/admin-analytics.ts`
+- `src/lib/analytics/data-aggregation.ts`
+- `src/lib/analytics/difficulty-analysis.ts`
+
+**Analytics Features**:
+
+**Usage Analytics**:
+
+- Total tests completed (daily, weekly, monthly trends)
+- Anonymous vs authenticated user ratios
+- Popular test configurations (language, duration, keyboard layout)
+- Peak usage times and geographic distribution
+- User retention and engagement metrics
+
+**Content Analytics**:
+
+- Most difficult words across all tests
+- Language preference trends and popularity
+- Common error patterns and typing mistakes
+- Word completion rates and accuracy by position
+- Text source effectiveness (random words vs quotes)
+
+**User Journey Analytics**:
+
+- Anonymous to registered user conversion rates
+- User improvement trajectories and learning curves
+- Drop-off points in tests and completion rates
+- Popular settings combinations and user preferences
+- Feature usage statistics (keyboard display, themes, etc.)
+
+**System Performance Analytics**:
+
+- Database query performance monitoring
+- API response times and error rates
+- User session duration and activity patterns
+- Resource utilization and scaling insights
+
+**Acceptance Criteria**:
+
+- Comprehensive analytics dashboard accessible to admins only
+- Real-time and historical data visualization
+- Word difficulty analysis provides actionable insights
+- User behavior patterns clearly identified
+- System performance monitoring shows key metrics
+- Data export functionality works for all major metrics
+- Dashboard is responsive and loads quickly
+- Privacy-compliant analytics (no PII exposure)
+
+---
+
+#### Task 15: Anonymous User Session Management
+
+**Complexity**: Medium
+**Prerequisites**: Task 1, 8 completed
+**Deliverables**:
+
+- Anonymous user session tracking and management
+- Guest user experience optimization
+- Session persistence and data migration on registration
+- Privacy-compliant anonymous analytics
+- Seamless transition from anonymous to authenticated experience
+
+**Files to Create**:
+
+- `src/lib/session/anonymous-session.ts`
+- `src/hooks/useAnonymousSession.ts`
+- `src/lib/session/session-migration.ts`
+- `src/components/typing-test/GuestWelcome.tsx`
+- `src/lib/privacy/anonymous-data.ts`
+
+**Session Management Features**:
+
+**Anonymous Session Creation**:
+
+- Generate unique session IDs for anonymous users
+- Store session data in secure, privacy-compliant way
+- Track session duration and test completion
+- Handle session expiration and cleanup
+
+**Guest User Experience**:
+
+- Welcome messaging explaining guest vs registered benefits
+- Temporary result storage and progress tracking
+- Encouragement to register for permanent history
+- Clear privacy notices about data collection
+
+**Data Migration System**:
+
+- Seamless migration of guest results to user account on registration
+- Preserve test history, personal bests, and preferences
+- Handle edge cases and data conflicts gracefully
+- Cleanup anonymous session data after migration
+
+**Privacy Compliance**:
+
+- Clear data collection notices for anonymous users
+- GDPR-compliant session management
+- Data retention policies for anonymous results
+- Easy opt-out mechanisms for tracking
+
+**Acceptance Criteria**:
+
+- Anonymous users can complete tests and see results
+- Session tracking works reliably across browser sessions
+- Guest users receive appropriate encouragement to register
+- Data migration on registration is seamless and complete
+- Privacy compliance measures are properly implemented
+- No PII is collected from anonymous users
+- Session cleanup prevents data accumulation
+- Performance impact of session management is minimal
+
+---
+
 ## Integration Points
 
 ### Main Integration Component
@@ -373,10 +672,13 @@ const useTypingTest = (config: TypingTestConfig) => {
 
 ### PayloadCMS Integration Points
 
-- User collection updates (Task 1)
-- Test result storage (Task 8)
-- User preferences (Task 10)
-- Statistics tracking (Task 9)
+- **TypingTestResults Collection** (Task 1) - Standalone collection for all test results
+- **User Collection Updates** (Task 1) - Enhanced preferences and summary statistics
+- **Test Result Storage** (Task 8) - API endpoints for storing and retrieving results
+- **User Statistics** (Task 9) - Aggregation from TypingTestResults collection
+- **Leaderboards** (Task 13) - Real-time ranking queries and caching
+- **Admin Analytics** (Task 14) - Advanced reporting and data analysis
+- **Anonymous Session Management** (Task 15) - Privacy-compliant guest user tracking
 
 ## Success Metrics
 
@@ -391,7 +693,8 @@ const useTypingTest = (config: TypingTestConfig) => {
 
 - Mobile-friendly interface
 - Screen reader compatibility
-- Support for 6+ keyboard layouts
+- Support for 8+ keyboard layouts across 6 languages
+- Proper special character and accent support
 - Offline capability for basic functionality
 
 ## Risk Mitigation
@@ -402,6 +705,7 @@ const useTypingTest = (config: TypingTestConfig) => {
 - Task 5 (Text Display) - Performance-critical rendering
 - Task 6 (Input Handling) - Cross-browser compatibility
 - Task 11 (Mobile/A11y) - Complex responsive design
+- Task 17 (Advanced Keyboard Layouts) - Complex multi-language keyboard handling
 
 **Mitigation Strategies**:
 
@@ -420,3 +724,90 @@ Each task includes:
 - **Next Steps**: Clear path forward for next session
 
 This ensures any task can be picked up fresh in a new session with minimal context switching overhead.
+
+---
+
+### Phase 6: Language & Localization Enhancements
+
+#### Task 16: Enhanced Language Support Implementation
+
+**Complexity**: Medium
+**Prerequisites**: Task 2 completed
+**Deliverables**:
+
+- Implement comprehensive language support for typing tests
+- Create word datasets for all 6 supported languages
+- Language-specific content curation and quality assurance
+- Proper handling of accents and special characters
+
+**Files to Create**:
+
+- Language-specific word datasets with proper character encoding
+- Language detection and switching utilities
+- Special character input handling logic
+
+**Language-Specific Features**:
+
+- **Spanish**: Support for ñ, accented vowels (á, é, í, ó, ú, ü)
+- **French**: Support for é, è, à, ç, ô, î, and other French accents
+- **German**: Support for umlauts (ä, ö, ü) and ß (eszett)
+- **Swedish**: Support for å, ä, ö characters
+- **Portuguese**: Support for ã, ç, é, á, ô, and Portuguese-specific accents
+
+**Acceptance Criteria**:
+
+- All 6 languages have high-quality, culturally appropriate word datasets
+- Special characters display and input correctly in typing tests
+- Language switching works seamlessly without bugs
+- Word selection algorithms respect language-specific frequency patterns
+
+---
+
+#### Task 17: Advanced Keyboard Layout System
+
+**Complexity**: High
+**Prerequisites**: Task 16 completed
+**Deliverables**:
+
+- Complete keyboard layout definitions for all supported languages
+- Visual keyboard component supporting all layouts
+- Accurate key highlighting for language-specific characters
+- Layout-language correlation and smart defaults
+
+**Files to Create**:
+
+- `src/lib/keyboard-layouts/qwerty-us.ts`
+- `src/lib/keyboard-layouts/qwerty-swedish.ts`
+- `src/lib/keyboard-layouts/azerty-french.ts`
+- `src/lib/keyboard-layouts/qwertz-german.ts`
+- `src/lib/keyboard-layouts/qwerty-spanish.ts`
+- `src/lib/keyboard-layouts/qwerty-portuguese.ts`
+- `src/lib/keyboard-layouts/dvorak-us.ts`
+- `src/lib/keyboard-layouts/colemak.ts`
+- `src/lib/keyboard-layouts/layout-matcher.ts`
+
+**Advanced Features**:
+
+- **Smart Layout Detection**: Suggest appropriate keyboard layout based on selected language
+- **Multi-layer Support**: Handle shift, alt, and other modifier keys properly
+- **Dead Key Support**: Proper handling of dead keys for accents in various layouts
+- **Visual Accuracy**: Keyboard layouts match actual physical keyboard appearance
+- **Accessibility**: Screen reader support for keyboard layout descriptions
+
+**Layout-Language Correlations**:
+
+- English → QWERTY (US), DVORAK, COLEMAK
+- Spanish → QWERTY (Spanish) with ñ key placement
+- French → AZERTY with proper accent key locations
+- German → QWERTZ with ü, ö, ä, ß key placement
+- Swedish → QWERTY (Swedish) with å, ä, ö keys
+- Portuguese → QWERTY (Portuguese) with ã, ç positioning
+
+**Acceptance Criteria**:
+
+- All keyboard layouts render accurately with proper key positioning
+- Real-time highlighting works correctly for all language-specific characters
+- Layout switching is smooth and maintains user context
+- Smart defaults suggest appropriate layouts for selected languages
+- Keyboard layouts are accessible and work with assistive technologies
+- Performance is optimized (no lag during typing with complex layouts)
