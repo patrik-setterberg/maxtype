@@ -63,14 +63,26 @@ export const SignupSchema = z
  */
 export const PreferenceSchema = z
   .object({
-    language: z.enum(['en', 'es', 'fr', 'de', 'sv'], {
-      required_error: 'Language is required.',
+    language: z.enum(['en', 'es', 'fr', 'de', 'sv', 'pt'], {
+      required_error: 'Typing test language is required.',
       invalid_type_error: 'Invalid language selection.',
     }),
-    keyboardLayout: z.enum(['qwerty', 'azerty', 'dvorak', 'colemak'], {
-      required_error: 'Keyboard layout is required.',
-      invalid_type_error: 'Invalid keyboard layout selection.',
-    }),
+    keyboardLayout: z.enum(
+      [
+        'qwerty_us',
+        'qwerty_sv',
+        'azerty_fr',
+        'qwertz_de',
+        'qwerty_es',
+        'qwerty_pt',
+        'dvorak_us',
+        'colemak',
+      ],
+      {
+        required_error: 'Keyboard layout is required.',
+        invalid_type_error: 'Invalid keyboard layout selection.',
+      },
+    ),
     testDuration: z.enum(['30', '60', '120'], {
       required_error: 'Test duration is required.',
       invalid_type_error: 'Invalid test duration selection.',

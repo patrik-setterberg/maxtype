@@ -390,12 +390,17 @@ export const Users: CollectionConfig = {
         {
           name: 'language',
           type: 'select',
+          label: 'Typing Test Language',
+          admin: {
+            description: 'Choose the language of words for typing tests',
+          },
           options: [
             { label: 'English', value: 'en' },
             { label: 'Spanish', value: 'es' },
             { label: 'French', value: 'fr' },
             { label: 'German', value: 'de' },
             { label: 'Swedish', value: 'sv' },
+            { label: 'Portuguese', value: 'pt' },
           ],
           required: true,
           defaultValue: 'en',
@@ -403,14 +408,22 @@ export const Users: CollectionConfig = {
         {
           name: 'keyboardLayout',
           type: 'select',
+          label: 'Keyboard Layout',
+          admin: {
+            description: 'Choose your physical keyboard layout for accurate visual highlighting',
+          },
           options: [
-            { label: 'QWERTY', value: 'qwerty' },
-            { label: 'AZERTY', value: 'azerty' },
-            { label: 'DVORAK', value: 'dvorak' },
+            { label: 'QWERTY (US English)', value: 'qwerty_us' },
+            { label: 'QWERTY (Swedish)', value: 'qwerty_sv' },
+            { label: 'AZERTY (French)', value: 'azerty_fr' },
+            { label: 'QWERTZ (German)', value: 'qwertz_de' },
+            { label: 'QWERTY (Spanish)', value: 'qwerty_es' },
+            { label: 'QWERTY (Portuguese)', value: 'qwerty_pt' },
+            { label: 'DVORAK (US)', value: 'dvorak_us' },
             { label: 'COLEMAK', value: 'colemak' },
           ],
           required: true,
-          defaultValue: 'qwerty',
+          defaultValue: 'qwerty_us',
         },
         {
           name: 'testDuration',
