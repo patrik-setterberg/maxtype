@@ -58,6 +58,8 @@ For comprehensive information on specific aspects of the project, see:
 - **[Development Guidelines](./docs/DEVELOPMENT.md)** - ESLint config, code quality, patterns, utilities, best practices
 - **[Testing Strategy](./docs/TESTING.md)** - TDD approach, Jest configuration, 80+ tests, coverage reporting
 - **[Deployment & Security](./docs/DEPLOYMENT.md)** - Docker setup, security headers, production deployment, monitoring
+- **[TypeThree Analysis](./docs/TYPETHREE-ANALYSIS.md)** - Analysis of previous typing test implementation for MaxType development
+- **[Typing Test Implementation Plan](./docs/TYPING-TEST-IMPLEMENTATION.md)** - Complete 12-task implementation roadmap with session-based breakdown
 
 ## User Preferences System
 
@@ -74,14 +76,24 @@ For comprehensive information on specific aspects of the project, see:
 
 ## Missing/Future Features
 
-### Core Typing Test Features (Not Yet Implemented)
+### Core Typing Test Features (Implementation Planned)
 
-- **Typing Test Engine**: The main typing test functionality
+- **Typing Test Engine**: The main typing test functionality (based on TypeThree analysis)
 - **Statistics Tracking**: WPM, accuracy, error tracking for authenticated users
 - **Test Results Storage**: Database storage for user performance history
 - **Text Content**: Word lists, custom text support, different languages
 - **Real-time Feedback**: Visual keyboard highlighting, error indicators
 - **Progress Tracking**: Charts, historical data, personal bests
+
+**Implementation Strategy**: Migrate and modernize the existing TypeThree implementation
+
+- High-precision timing system using `performance.now()`
+- TailwindCSS styling integration with MaxType's OKLCH color system
+- PayloadCMS User collection integration for result persistence
+- Enhanced accessibility and mobile support
+- Multi-layout keyboard support (6 layouts: QWERTY, DVORAK, AZERTY, etc.)
+
+See **[TypeThree Analysis](./docs/TYPETHREE-ANALYSIS.md)** for detailed migration plan.
 
 ### Potential Enhancements
 
@@ -198,11 +210,38 @@ read: ({ req: { user } }) => {
 - **User Preferences**: Guest and authenticated user preference management
 - **Component Library**: Comprehensive UI components with Radix integration
 
-### 🚧 Upcoming Tasks
+### 🚧 Upcoming Tasks (12-Session Implementation Plan)
 
-- **Revisit themes (color palette)**: Refine visual design
-- **Add typing test relevant data fields to User collection**: Prepare for test results storage
+**Complete typing test implementation via clean rewrite** - See [Implementation Plan](./docs/TYPING-TEST-IMPLEMENTATION.md)
+
+**Phase 1: Foundation & Data Setup**
+
+- Task 1: PayloadCMS User Collection Updates
+- Task 2: Word Data and Content Management
+- Task 3: Core Algorithms and Utilities
+
+**Phase 2: Core Components**
+
+- Task 4: High-Precision Timer System
+- Task 5: Text Display and Highlighting Engine
+- Task 6: Input Handling and Keyboard Events
+
+**Phase 3: Advanced Features**
+
+- Task 7: Visual Keyboard Component
+- Task 8: Results and Scoring System
+- Task 9: Statistics and History Tracking
+
+**Phase 4: Integration & Polish**
+
+- Task 10: Authentication Integration
+- Task 11: Mobile Responsiveness and Accessibility
+- Task 12: Testing Coverage and Performance Optimization
+
+**Other Tasks**:
+
 - **Statistics dashboard for admins**: Administrative reporting features
+- **Revisit themes (color palette)**: Refine visual design to match typing test UI
 
 ## important-instruction-reminders
 
