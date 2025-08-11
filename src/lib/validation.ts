@@ -95,6 +95,10 @@ export const PreferenceSchema = z
       required_error: 'Theme preference is required.',
       invalid_type_error: 'Invalid theme selection.',
     }),
+    textType: z.enum(['words', 'sentences', 'paragraphs', 'punctuation', 'custom'], {
+      required_error: 'Text type preference is required.',
+      invalid_type_error: 'Invalid text type selection.',
+    }),
   })
   .strict() // Prevent additional properties
 
@@ -163,6 +167,131 @@ export const ChangePasswordSchema = z
     path: ['newPassword'],
   })
 
+/**
+ * Typing test result validation schema
+ * Used for validating and storing typing test results
+ */
+export const TypingTestResultSchema = z.object({
+  // Optional user association
+  user: z.string().optional(),
+  sessionId: z.string().optional(),
+
+  // Test configuration
+  testConfig: z.object({
+    language: z.enum(['en', 'es', 'fr', 'de', 'sv', 'pt']),
+    keyboardLayout: z.enum([
+      'qwerty_us',
+      'qwerty_sv',
+      'azerty_fr',
+      'qwertz_de',
+      'qwerty_es',
+      'qwerty_pt',
+      'dvorak_us',
+      'colemak',
+    ]),
+    testDuration: z.enum(['30', '60', '120']),
+    showKeyboard: z.boolean(),
+    textType: z.enum(['words', 'sentences', 'paragraphs', 'punctuation', 'custom']),
+    textSource: z.string().optional(),
+    textContentHash: z.string().optional(),
+  }),
+
+  // Core performance metrics
+  results: z.object({
+    wpm: z.number().min(0).max(300),
+    netWpm: z.number().min(0).max(300),
+    accuracy: z.number().min(0).max(100),
+    consistency: z.number().min(0).max(100),
+  }),
+
+  // Detailed statistics
+  statistics: z.object({
+    totalCharacters: z.number().min(0),
+    correctCharacters: z.number().min(0),
+    incorrectCharacters: z.number().min(0),
+    totalWords: z.number().min(0),
+    correctWords: z.number().min(0),
+    incorrectWords: z.number().min(0),
+    extraCharacters: z.number().min(0),
+    missedCharacters: z.number().min(0),
+  }),
+
+  // Error analysis
+  errorAnalysis: z
+    .object({
+      incorrectWordsList: z
+        .array(
+          z.object({
+            word: z.string(),
+            typed: z.string(),
+            position: z.number().min(0),
+          }),
+        )
+        .optional(),
+      commonMistakes: z
+        .array(
+          z.object({
+            character: z.string().length(1),
+            typedAs: z.string().length(1),
+            frequency: z.number().min(1),
+          }),
+        )
+        .optional(),
+    })
+    .optional(),
+
+  // Timing data
+  timingData: z.object({
+    actualDuration: z.number().min(0),
+    pausedDuration: z.number().min(0).default(0),
+    keystrokeTimings: z.any().optional(), // JSON data
+  }),
+
+  // Personal best flags
+  isPersonalBest: z
+    .object({
+      wpmPB: z.boolean().default(false),
+      accuracyPB: z.boolean().default(false),
+      consistencyPB: z.boolean().default(false),
+    })
+    .optional(),
+
+  // Metadata
+  metadata: z
+    .object({
+      userAgent: z.string().optional(),
+      ipAddress: z.string().optional(),
+      testTextHash: z.string().optional(),
+      version: z.string().default('1.0.0'),
+    })
+    .optional(),
+})
+
+/**
+ * User typing statistics validation schema
+ * Simplified flattened fields to avoid PayloadCMS JWT traversal issues
+ */
+export const UserStatsSchema = z.object({
+  totalTests: z.number().min(0).default(0),
+  bestWpm: z.number().min(0).max(300).default(0),
+  bestAccuracy: z.number().min(0).max(100).default(0),
+  averageWpm: z.number().min(0).max(300).default(0),
+  currentStreak: z.number().min(0).default(0),
+  lastTestDate: z.date().optional(),
+})
+
+/**
+ * Anonymous session validation schema
+ * Used for tracking anonymous user sessions
+ */
+export const AnonymousSessionSchema = z.object({
+  sessionId: z.string(),
+  createdAt: z.date(),
+  lastActiveAt: z.date(),
+  testResults: z.array(z.string()).default([]), // Array of result IDs
+  preferences: PreferenceSchema.optional(),
+})
+
 // Type exports for TypeScript
 export type LoginFormData = z.infer<typeof LoginSchema>
 export type SignupFormData = z.infer<typeof SignupSchema>
@@ -170,3 +299,6 @@ export type UserPreferences = z.infer<typeof PreferenceSchema>
 export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordSchema>
 export type ResetPasswordFormData = z.infer<typeof ResetPasswordSchema>
 export type ChangePasswordFormData = z.infer<typeof ChangePasswordSchema>
+export type TypingTestResult = z.infer<typeof TypingTestResultSchema>
+export type UserStats = z.infer<typeof UserStatsSchema>
+export type AnonymousSession = z.infer<typeof AnonymousSessionSchema>
