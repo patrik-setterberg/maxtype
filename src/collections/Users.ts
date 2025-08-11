@@ -352,6 +352,55 @@ export const Users: CollectionConfig = {
       return false
     },
   },
+  hooks: {
+    afterRead: [
+      async ({ doc }) => {
+        // Ensure existing users have proper default values to prevent undefined access errors
+        if (!doc.preferences) {
+          doc.preferences = {
+            language: 'en',
+            keyboardLayout: 'qwerty_us',
+            testDuration: '30',
+            showKeyboard: true,
+            theme: 'system',
+            textType: 'words',
+          }
+        } else {
+          // Ensure all preference fields exist (especially textType for existing users)
+          if (!doc.preferences.textType) {
+            doc.preferences.textType = 'words'
+          }
+        }
+
+        // Ensure typing statistics fields have default values
+        if (typeof doc.totalTests !== 'number') {
+          doc.totalTests = 0
+        }
+        if (typeof doc.bestWpm !== 'number') {
+          doc.bestWpm = 0
+        }
+        if (typeof doc.bestAccuracy !== 'number') {
+          doc.bestAccuracy = 0
+        }
+        if (typeof doc.averageWpm !== 'number') {
+          doc.averageWpm = 0
+        }
+        if (typeof doc.currentStreak !== 'number') {
+          doc.currentStreak = 0
+        }
+
+        return doc
+      },
+    ],
+    beforeChange: [
+      async ({ data }) => {
+        // Ensure email is lowercase for consistency
+        if (data.email) {
+          data.email = data.email.toLowerCase()
+        }
+      },
+    ],
+  },
   fields: [
     // Explicitly define email field to ensure proper validation
     {
@@ -386,6 +435,14 @@ export const Users: CollectionConfig = {
     {
       name: 'preferences',
       type: 'group',
+      defaultValue: {
+        language: 'en',
+        keyboardLayout: 'qwerty_us',
+        testDuration: '30',
+        showKeyboard: true,
+        theme: 'system',
+        textType: 'words',
+      },
       fields: [
         {
           name: 'language',
@@ -454,7 +511,86 @@ export const Users: CollectionConfig = {
           required: true,
           defaultValue: 'system',
         },
+        {
+          name: 'textType',
+          type: 'select',
+          label: 'Preferred Text Type',
+          admin: {
+            description: 'Your default text type for typing tests',
+          },
+          options: [
+            { label: 'Random Words', value: 'words' },
+            { label: 'Random Sentences', value: 'sentences' },
+            { label: 'Full Paragraphs', value: 'paragraphs' },
+            { label: 'Punctuation Practice', value: 'punctuation' },
+            { label: 'Custom Text', value: 'custom' },
+          ],
+          required: true,
+          defaultValue: 'words',
+        },
       ],
+    },
+    // Simplified typing statistics to avoid PayloadCMS JWT traversal issues
+    {
+      name: 'totalTests',
+      type: 'number',
+      defaultValue: 0,
+      min: 0,
+      admin: {
+        description: 'Total number of typing tests completed',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'bestWpm',
+      type: 'number',
+      defaultValue: 0,
+      min: 0,
+      max: 300,
+      admin: {
+        description: 'Personal best WPM (any configuration)',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'bestAccuracy',
+      type: 'number',
+      defaultValue: 0,
+      min: 0,
+      max: 100,
+      admin: {
+        description: 'Personal best accuracy percentage',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'averageWpm',
+      type: 'number',
+      defaultValue: 0,
+      min: 0,
+      max: 300,
+      admin: {
+        description: 'Average WPM across all tests',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'currentStreak',
+      type: 'number',
+      defaultValue: 0,
+      min: 0,
+      admin: {
+        description: 'Current daily typing streak',
+        readOnly: true,
+      },
+    },
+    {
+      name: 'lastTestDate',
+      type: 'date',
+      admin: {
+        description: 'Date of most recent typing test',
+        readOnly: true,
+      },
     },
   ],
 }
