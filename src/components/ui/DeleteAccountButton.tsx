@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Trash2 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { cn } from '@/lib/utils'
@@ -19,8 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 
 export default function DeleteAccountButton() {
-  const { user, logout } = useAuth()
-  const router = useRouter()
+  const { user } = useAuth()
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
