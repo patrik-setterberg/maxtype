@@ -71,6 +71,7 @@ export interface Config {
     users: User;
     media: Media;
     pages: Page;
+    'typing-test-results': TypingTestResult;
     forms: Form;
     'form-submissions': FormSubmission;
     'payload-locked-documents': PayloadLockedDocument;
@@ -83,6 +84,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    'typing-test-results': TypingTestResultsSelect<false> | TypingTestResultsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -184,12 +186,54 @@ export interface Admin {
 export interface User {
   id: string;
   preferences: {
-    language: 'en' | 'es' | 'fr' | 'de' | 'sv';
-    keyboardLayout: 'qwerty' | 'azerty' | 'dvorak' | 'colemak';
+    /**
+     * Choose the language of words for typing tests
+     */
+    language: 'en' | 'es' | 'fr' | 'de' | 'sv' | 'pt';
+    /**
+     * Choose your physical keyboard layout for accurate visual highlighting
+     */
+    keyboardLayout:
+      | 'qwerty_us'
+      | 'qwerty_sv'
+      | 'azerty_fr'
+      | 'qwertz_de'
+      | 'qwerty_es'
+      | 'qwerty_pt'
+      | 'dvorak_us'
+      | 'colemak';
     testDuration: '30' | '60' | '120';
     showKeyboard: boolean;
     theme: 'light' | 'dark' | 'system';
+    /**
+     * Your default text type for typing tests
+     */
+    textType: 'words' | 'sentences' | 'paragraphs' | 'punctuation' | 'custom';
   };
+  /**
+   * Total number of typing tests completed
+   */
+  totalTests?: number | null;
+  /**
+   * Personal best WPM (any configuration)
+   */
+  bestWpm?: number | null;
+  /**
+   * Personal best accuracy percentage
+   */
+  bestAccuracy?: number | null;
+  /**
+   * Average WPM across all tests
+   */
+  averageWpm?: number | null;
+  /**
+   * Current daily typing streak
+   */
+  currentStreak?: number | null;
+  /**
+   * Date of most recent typing test
+   */
+  lastTestDate?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -448,6 +492,179 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "typing-test-results".
+ */
+export interface TypingTestResult {
+  id: string;
+  /**
+   * Associated user account (null for anonymous users)
+   */
+  user?: (string | null) | User;
+  /**
+   * Unique session identifier for anonymous users
+   */
+  sessionId?: string | null;
+  testConfig: {
+    language: 'en' | 'es' | 'fr' | 'de' | 'sv' | 'pt';
+    keyboardLayout:
+      | 'qwerty_us'
+      | 'qwerty_sv'
+      | 'azerty_fr'
+      | 'qwertz_de'
+      | 'qwerty_es'
+      | 'qwerty_pt'
+      | 'dvorak_us'
+      | 'colemak';
+    testDuration: '30' | '60' | '120';
+    showKeyboard: boolean;
+    /**
+     * Type of text content used for the typing test
+     */
+    textType: 'words' | 'sentences' | 'paragraphs' | 'punctuation' | 'custom';
+    /**
+     * Source attribution for the text content (e.g., "Shakespeare Hamlet", "Top 1000 Words", "User Imported")
+     */
+    textSource?: string | null;
+    /**
+     * Hash of the actual text content for consistency analysis
+     */
+    textContentHash?: string | null;
+  };
+  results: {
+    /**
+     * Words per minute (gross WPM)
+     */
+    wpm: number;
+    /**
+     * Net words per minute (adjusted for errors)
+     */
+    netWpm: number;
+    /**
+     * Accuracy percentage (0-100)
+     */
+    accuracy: number;
+    /**
+     * Consistency percentage based on timing variance
+     */
+    consistency: number;
+  };
+  statistics: {
+    /**
+     * Total characters typed
+     */
+    totalCharacters: number;
+    /**
+     * Number of correctly typed characters
+     */
+    correctCharacters: number;
+    /**
+     * Number of incorrectly typed characters
+     */
+    incorrectCharacters: number;
+    /**
+     * Total words in the test text
+     */
+    totalWords: number;
+    /**
+     * Number of correctly typed words
+     */
+    correctWords: number;
+    /**
+     * Number of incorrectly typed words
+     */
+    incorrectWords: number;
+    /**
+     * Extra characters typed beyond the test text
+     */
+    extraCharacters: number;
+    /**
+     * Characters missed/skipped in the test text
+     */
+    missedCharacters: number;
+  };
+  errorAnalysis?: {
+    /**
+     * List of words that were typed incorrectly
+     */
+    incorrectWordsList?:
+      | {
+          word: string;
+          typed: string;
+          position: number;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Common character substitution errors
+     */
+    commonMistakes?:
+      | {
+          character: string;
+          typedAs: string;
+          frequency: number;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  timingData: {
+    /**
+     * Actual test duration in milliseconds
+     */
+    actualDuration: number;
+    /**
+     * Total time paused during test (ms)
+     */
+    pausedDuration: number;
+    /**
+     * Detailed keystroke timing data for analysis
+     */
+    keystrokeTimings?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  isPersonalBest?: {
+    /**
+     * Personal best WPM for this configuration
+     */
+    wpmPB?: boolean | null;
+    /**
+     * Personal best accuracy for this configuration
+     */
+    accuracyPB?: boolean | null;
+    /**
+     * Personal best consistency for this configuration
+     */
+    consistencyPB?: boolean | null;
+  };
+  metadata?: {
+    /**
+     * User agent string for device/browser analytics
+     */
+    userAgent?: string | null;
+    /**
+     * IP address (anonymized for privacy)
+     */
+    ipAddress?: string | null;
+    /**
+     * Hash of the test text used (for consistency analysis)
+     */
+    testTextHash?: string | null;
+    /**
+     * Typing test engine version
+     */
+    version?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
@@ -485,6 +702,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: string | Page;
+      } | null)
+    | ({
+        relationTo: 'typing-test-results';
+        value: string | TypingTestResult;
       } | null)
     | ({
         relationTo: 'forms';
@@ -575,7 +796,14 @@ export interface UsersSelect<T extends boolean = true> {
         testDuration?: T;
         showKeyboard?: T;
         theme?: T;
+        textType?: T;
       };
+  totalTests?: T;
+  bestWpm?: T;
+  bestAccuracy?: T;
+  averageWpm?: T;
+  currentStreak?: T;
+  lastTestDate?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -626,6 +854,89 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "typing-test-results_select".
+ */
+export interface TypingTestResultsSelect<T extends boolean = true> {
+  user?: T;
+  sessionId?: T;
+  testConfig?:
+    | T
+    | {
+        language?: T;
+        keyboardLayout?: T;
+        testDuration?: T;
+        showKeyboard?: T;
+        textType?: T;
+        textSource?: T;
+        textContentHash?: T;
+      };
+  results?:
+    | T
+    | {
+        wpm?: T;
+        netWpm?: T;
+        accuracy?: T;
+        consistency?: T;
+      };
+  statistics?:
+    | T
+    | {
+        totalCharacters?: T;
+        correctCharacters?: T;
+        incorrectCharacters?: T;
+        totalWords?: T;
+        correctWords?: T;
+        incorrectWords?: T;
+        extraCharacters?: T;
+        missedCharacters?: T;
+      };
+  errorAnalysis?:
+    | T
+    | {
+        incorrectWordsList?:
+          | T
+          | {
+              word?: T;
+              typed?: T;
+              position?: T;
+              id?: T;
+            };
+        commonMistakes?:
+          | T
+          | {
+              character?: T;
+              typedAs?: T;
+              frequency?: T;
+              id?: T;
+            };
+      };
+  timingData?:
+    | T
+    | {
+        actualDuration?: T;
+        pausedDuration?: T;
+        keystrokeTimings?: T;
+      };
+  isPersonalBest?:
+    | T
+    | {
+        wpmPB?: T;
+        accuracyPB?: T;
+        consistencyPB?: T;
+      };
+  metadata?:
+    | T
+    | {
+        userAgent?: T;
+        ipAddress?: T;
+        testTextHash?: T;
+        version?: T;
       };
   updatedAt?: T;
   createdAt?: T;
