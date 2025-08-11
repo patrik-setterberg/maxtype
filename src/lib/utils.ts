@@ -183,3 +183,71 @@ export const getAuthErrorMessage = (
   // Fallback to original message or generic error
   return message || 'An unexpected error occurred. Please try again.'
 }
+
+/**
+ * Sanitizes custom text input to prevent XSS and other security issues
+ * Removes HTML tags, scripts, and other potentially dangerous content
+ */
+export const sanitizeCustomText = (text: string): string => {
+  if (!text || typeof text !== 'string') {
+    return ''
+  }
+
+  let sanitized = text
+
+  // Remove HTML tags completely (including script content)
+  sanitized = sanitized.replace(/<[^>]*>/g, '')
+
+  // Remove javascript: protocol anywhere in text
+  sanitized = sanitized.replace(/javascript:/gi, '')
+
+  // Remove data: protocol (can be used for XSS)
+  sanitized = sanitized.replace(/data:[^,\s]*,?/gi, '')
+
+  // Remove on* event handlers (onclick, onload, etc.) - match quoted or unquoted values
+  sanitized = sanitized.replace(/\bon\w+\s*=\s*[^"\s]*(?:"[^"]*")?/gi, '')
+
+  // Normalize whitespace (remove excessive whitespace but keep paragraph structure)
+  sanitized = sanitized.replace(/\s+/g, ' ').trim()
+
+  // Limit length to prevent abuse (max 10,000 characters)
+  if (sanitized.length > 10000) {
+    sanitized = sanitized.substring(0, 10000)
+  }
+
+  return sanitized
+}
+
+/**
+ * Validates custom text for typing practice
+ * Returns validation result with error message if invalid
+ */
+export const validateCustomText = (text: string): { isValid: boolean; error?: string } => {
+  if (!text || typeof text !== 'string') {
+    return { isValid: false, error: 'Custom text is required when using custom text type.' }
+  }
+
+  const sanitized = sanitizeCustomText(text)
+
+  if (sanitized.length === 0) {
+    return { isValid: false, error: 'Custom text cannot be empty or contain only invalid content.' }
+  }
+
+  if (sanitized.length < 10) {
+    return { isValid: false, error: 'Custom text must be at least 10 characters long.' }
+  }
+
+  if (sanitized.length > 10000) {
+    return { isValid: false, error: 'Custom text cannot exceed 10,000 characters.' }
+  }
+
+  // Check for mostly non-alphanumeric content (could indicate malicious input)
+  const alphanumericCount = (sanitized.match(/[a-zA-Z0-9]/g) || []).length
+  const alphanumericRatio = alphanumericCount / sanitized.length
+
+  if (alphanumericRatio < 0.3) {
+    return { isValid: false, error: 'Custom text must contain mostly readable characters.' }
+  }
+
+  return { isValid: true }
+}
