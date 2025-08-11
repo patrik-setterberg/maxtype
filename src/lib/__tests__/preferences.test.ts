@@ -51,10 +51,11 @@ describe('PreferenceStorage', () => {
     test('should save preferences to localStorage', () => {
       const preferences = {
         language: 'es' as const,
-        keyboardLayout: 'azerty' as const,
+        keyboardLayout: 'azerty_fr' as const,
         testDuration: '60' as const,
         showKeyboard: false,
         theme: 'dark' as const,
+        textType: 'words' as const,
       }
 
       PreferenceStorage.saveToLocalStorage(preferences)
@@ -68,10 +69,11 @@ describe('PreferenceStorage', () => {
     test('should load preferences from localStorage', () => {
       const preferences = {
         language: 'fr' as const,
-        keyboardLayout: 'dvorak' as const,
+        keyboardLayout: 'dvorak_us' as const,
         testDuration: '120' as const,
         showKeyboard: true,
         theme: 'light' as const,
+        textType: 'words' as const,
       }
 
       localStorageMock.getItem.mockReturnValue(JSON.stringify(preferences))
@@ -111,10 +113,11 @@ describe('PreferenceStorage', () => {
 
       expect(defaults).toEqual({
         language: 'en',
-        keyboardLayout: 'qwerty',
+        keyboardLayout: 'qwerty_us',
         testDuration: '30',
         showKeyboard: true,
         theme: 'system',
+        textType: 'words',
       })
     })
   })
@@ -123,10 +126,11 @@ describe('PreferenceStorage', () => {
     test('should validate correct preferences', () => {
       const validPreferences = {
         language: 'es' as const,
-        keyboardLayout: 'azerty' as const,
+        keyboardLayout: 'azerty_fr' as const,
         testDuration: '60' as const,
         showKeyboard: false,
         theme: 'dark' as const,
+        textType: 'words' as const,
       }
 
       expect(PreferenceStorage.isValidPreferences(validPreferences)).toBe(true)
@@ -135,10 +139,11 @@ describe('PreferenceStorage', () => {
     test('should reject invalid language', () => {
       const invalidPreferences = {
         language: 'invalid',
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -151,6 +156,7 @@ describe('PreferenceStorage', () => {
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -159,10 +165,11 @@ describe('PreferenceStorage', () => {
     test('should reject invalid test duration', () => {
       const invalidPreferences = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '45',
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -171,10 +178,11 @@ describe('PreferenceStorage', () => {
     test('should reject non-boolean showKeyboard', () => {
       const invalidPreferences = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: 'true',
         theme: 'system' as const,
+        textType: 'words' as const,
       } as const
 
       expect(PreferenceStorage.isValidPreferences(invalidPreferences)).toBe(false)
@@ -183,7 +191,7 @@ describe('PreferenceStorage', () => {
     test('should reject missing fields', () => {
       const incompletePreferences = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         // missing testDuration, showKeyboard, and theme
       }
 
@@ -208,10 +216,11 @@ describe('usePreferences hook', () => {
 
       expect(result.current.preferences).toEqual({
         language: 'en',
-        keyboardLayout: 'qwerty',
+        keyboardLayout: 'qwerty_us',
         testDuration: '30',
         showKeyboard: true,
         theme: 'system',
+        textType: 'words',
       })
       expect(result.current.isGuest).toBe(true)
       expect(result.current.loading).toBe(false)
@@ -220,10 +229,11 @@ describe('usePreferences hook', () => {
     test('should load preferences from localStorage for returning guest', () => {
       const savedPreferences = {
         language: 'es' as const,
-        keyboardLayout: 'azerty' as const,
+        keyboardLayout: 'azerty_fr' as const,
         testDuration: '60' as const,
         showKeyboard: false,
         theme: 'dark' as const,
+        textType: 'words' as const,
       }
       localStorageMock.getItem.mockReturnValue(JSON.stringify(savedPreferences))
 
@@ -239,28 +249,31 @@ describe('usePreferences hook', () => {
       await act(async () => {
         await result.current.updatePreferences({
           language: 'fr',
-          keyboardLayout: 'dvorak',
+          keyboardLayout: 'dvorak_us',
           testDuration: '120',
           showKeyboard: false,
           theme: 'light',
+          textType: 'paragraphs',
         })
       })
 
       expect(result.current.preferences).toEqual({
         language: 'fr',
-        keyboardLayout: 'dvorak',
+        keyboardLayout: 'dvorak_us',
         testDuration: '120',
         showKeyboard: false,
         theme: 'light',
+        textType: 'paragraphs',
       })
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'maxtype-preferences',
         JSON.stringify({
           language: 'fr',
-          keyboardLayout: 'dvorak',
+          keyboardLayout: 'dvorak_us',
           testDuration: '120',
           showKeyboard: false,
           theme: 'light',
+          textType: 'paragraphs',
         }),
       )
     })
@@ -274,10 +287,11 @@ describe('usePreferences hook', () => {
       // Verify we start with defaults
       expect(result.current.preferences).toEqual({
         language: 'en',
-        keyboardLayout: 'qwerty',
+        keyboardLayout: 'qwerty_us',
         testDuration: '30',
         showKeyboard: true,
         theme: 'system',
+        textType: 'words',
       })
 
       let errorCaught = false
@@ -285,10 +299,11 @@ describe('usePreferences hook', () => {
         try {
           await result.current.updatePreferences({
             language: 'invalid',
-            keyboardLayout: 'qwerty',
+            keyboardLayout: 'qwerty_us',
             testDuration: '30',
             showKeyboard: true,
             theme: 'system',
+            textType: 'words',
           } as UserPreferences)
         } catch (error) {
           errorCaught = true
@@ -301,10 +316,11 @@ describe('usePreferences hook', () => {
       // Preferences should remain unchanged
       expect(result.current.preferences).toEqual({
         language: 'en',
-        keyboardLayout: 'qwerty',
+        keyboardLayout: 'qwerty_us',
         testDuration: '30',
         showKeyboard: true,
         theme: 'system',
+        textType: 'words',
       })
     })
   })
@@ -317,7 +333,7 @@ describe('usePreferences hook', () => {
         email: 'test@example.com',
         preferences: {
           language: 'es',
-          keyboardLayout: 'azerty',
+          keyboardLayout: 'azerty_fr',
           testDuration: '60',
           showKeyboard: false,
           theme: 'dark',
@@ -330,7 +346,7 @@ describe('usePreferences hook', () => {
 
       expect(result.current.preferences).toEqual({
         language: 'es',
-        keyboardLayout: 'azerty',
+        keyboardLayout: 'azerty_fr',
         testDuration: '60',
         showKeyboard: false,
         theme: 'dark',
@@ -347,7 +363,7 @@ describe('usePreferences hook', () => {
               ...mockAuth.user,
               preferences: {
                 language: 'fr',
-                keyboardLayout: 'dvorak',
+                keyboardLayout: 'dvorak_us',
                 testDuration: '120',
                 showKeyboard: true,
                 theme: 'light',
@@ -361,10 +377,11 @@ describe('usePreferences hook', () => {
       await act(async () => {
         await result.current.updatePreferences({
           language: 'fr',
-          keyboardLayout: 'dvorak',
+          keyboardLayout: 'dvorak_us',
           testDuration: '120',
           showKeyboard: true,
           theme: 'light',
+          textType: 'sentences',
         })
       })
 
@@ -377,17 +394,18 @@ describe('usePreferences hook', () => {
         body: JSON.stringify({
           preferences: {
             language: 'fr',
-            keyboardLayout: 'dvorak',
+            keyboardLayout: 'dvorak_us',
             testDuration: '120',
             showKeyboard: true,
             theme: 'light',
+            textType: 'sentences',
           },
         }),
       })
 
       expect(result.current.preferences).toEqual({
         language: 'fr',
-        keyboardLayout: 'dvorak',
+        keyboardLayout: 'dvorak_us',
         testDuration: '120',
         showKeyboard: true,
         theme: 'light',
@@ -407,7 +425,7 @@ describe('usePreferences hook', () => {
         try {
           await result.current.updatePreferences({
             language: 'fr',
-            keyboardLayout: 'dvorak',
+            keyboardLayout: 'dvorak_us',
             testDuration: '120',
             showKeyboard: true,
             theme: 'light',
@@ -427,10 +445,11 @@ describe('usePreferences hook', () => {
       // Start as guest with saved preferences
       const guestPreferences = {
         language: 'es' as const,
-        keyboardLayout: 'azerty' as const,
+        keyboardLayout: 'azerty_fr' as const,
         testDuration: '60' as const,
         showKeyboard: false,
         theme: 'dark' as const,
+        textType: 'words' as const,
       }
       localStorageMock.getItem.mockReturnValue(JSON.stringify(guestPreferences))
 
@@ -462,7 +481,7 @@ describe('usePreferences hook', () => {
         email: 'test@example.com',
         preferences: {
           language: 'en', // Default database preferences
-          keyboardLayout: 'qwerty',
+          keyboardLayout: 'qwerty_us',
           testDuration: '30',
           showKeyboard: true,
           theme: 'system',
@@ -502,10 +521,11 @@ describe('usePreferences hook', () => {
       // Start as guest
       const guestPreferences = {
         language: 'es' as const,
-        keyboardLayout: 'azerty' as const,
+        keyboardLayout: 'azerty_fr' as const,
         testDuration: '60' as const,
         showKeyboard: false,
         theme: 'dark' as const,
+        textType: 'words' as const,
       }
       localStorageMock.getItem.mockReturnValue(JSON.stringify(guestPreferences))
 
@@ -521,7 +541,7 @@ describe('usePreferences hook', () => {
         email: 'test@example.com',
         preferences: {
           language: 'fr', // User already has custom preferences
-          keyboardLayout: 'dvorak',
+          keyboardLayout: 'dvorak_us',
           testDuration: '120',
           showKeyboard: true,
           theme: 'light',
@@ -540,7 +560,7 @@ describe('usePreferences hook', () => {
       // Should use user's existing preferences
       expect(result.current.preferences).toEqual({
         language: 'fr',
-        keyboardLayout: 'dvorak',
+        keyboardLayout: 'dvorak_us',
         testDuration: '120',
         showKeyboard: true,
         theme: 'light',
@@ -568,7 +588,7 @@ describe('usePreferences hook', () => {
         email: 'test@example.com',
         preferences: {
           language: 'en',
-          keyboardLayout: 'qwerty',
+          keyboardLayout: 'qwerty_us',
           testDuration: '30',
           showKeyboard: true,
           theme: 'system',
@@ -595,10 +615,11 @@ describe('usePreferences hook', () => {
       act(() => {
         result.current.updatePreferences({
           language: 'es',
-          keyboardLayout: 'azerty',
+          keyboardLayout: 'azerty_fr',
           testDuration: '60',
           showKeyboard: false,
           theme: 'dark',
+          textType: 'custom',
         })
       })
 

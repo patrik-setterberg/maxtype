@@ -3,15 +3,16 @@ import { PreferenceSchema } from '../validation'
 describe('PreferenceSchema', () => {
   describe('valid preferences', () => {
     test('should accept all valid language options', () => {
-      const languages = ['en', 'es', 'fr', 'de', 'sv'] as const
+      const languages = ['en', 'es', 'fr', 'de', 'sv', 'pt'] as const
 
       languages.forEach(language => {
         const validData = {
           language,
-          keyboardLayout: 'qwerty' as const,
+          keyboardLayout: 'qwerty_us' as const,
           testDuration: '30' as const,
           showKeyboard: true,
           theme: 'system' as const,
+          textType: 'words' as const,
         }
 
         expect(() => PreferenceSchema.parse(validData)).not.toThrow()
@@ -19,7 +20,16 @@ describe('PreferenceSchema', () => {
     })
 
     test('should accept all valid keyboard layout options', () => {
-      const layouts = ['qwerty', 'azerty', 'dvorak', 'colemak'] as const
+      const layouts = [
+        'qwerty_us',
+        'qwerty_sv',
+        'azerty_fr',
+        'qwertz_de',
+        'qwerty_es',
+        'qwerty_pt',
+        'dvorak_us',
+        'colemak',
+      ] as const
 
       layouts.forEach(keyboardLayout => {
         const validData = {
@@ -28,6 +38,7 @@ describe('PreferenceSchema', () => {
           testDuration: '30' as const,
           showKeyboard: true,
           theme: 'system' as const,
+          textType: 'words' as const,
         }
 
         expect(() => PreferenceSchema.parse(validData)).not.toThrow()
@@ -40,10 +51,11 @@ describe('PreferenceSchema', () => {
       durations.forEach(testDuration => {
         const validData = {
           language: 'en' as const,
-          keyboardLayout: 'qwerty' as const,
+          keyboardLayout: 'qwerty_us' as const,
           testDuration,
           showKeyboard: true,
           theme: 'system' as const,
+          textType: 'words' as const,
         }
 
         expect(() => PreferenceSchema.parse(validData)).not.toThrow()
@@ -54,10 +66,11 @@ describe('PreferenceSchema', () => {
       ;[true, false].forEach(showKeyboard => {
         const validData = {
           language: 'en' as const,
-          keyboardLayout: 'qwerty' as const,
+          keyboardLayout: 'qwerty_us' as const,
           testDuration: '30' as const,
           showKeyboard,
           theme: 'system' as const,
+          textType: 'words' as const,
         }
 
         expect(() => PreferenceSchema.parse(validData)).not.toThrow()
@@ -70,10 +83,11 @@ describe('PreferenceSchema', () => {
       themes.forEach(theme => {
         const validData = {
           language: 'en' as const,
-          keyboardLayout: 'qwerty' as const,
+          keyboardLayout: 'qwerty_us' as const,
           testDuration: '30' as const,
           showKeyboard: true,
           theme,
+          textType: 'words' as const,
         }
 
         expect(() => PreferenceSchema.parse(validData)).not.toThrow()
@@ -83,10 +97,11 @@ describe('PreferenceSchema', () => {
     test('should accept complete valid preference object', () => {
       const validPreferences = {
         language: 'es' as const,
-        keyboardLayout: 'azerty' as const,
+        keyboardLayout: 'azerty_fr' as const,
         testDuration: '60' as const,
         showKeyboard: false,
         theme: 'dark' as const,
+        textType: 'sentences' as const,
       }
 
       const result = PreferenceSchema.parse(validPreferences)
@@ -98,10 +113,11 @@ describe('PreferenceSchema', () => {
     test('should reject invalid language', () => {
       const invalidData = {
         language: 'invalid',
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
       }
 
       expect(() => PreferenceSchema.parse(invalidData)).toThrow()
@@ -114,6 +130,7 @@ describe('PreferenceSchema', () => {
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
       }
 
       expect(() => PreferenceSchema.parse(invalidData)).toThrow()
@@ -122,10 +139,11 @@ describe('PreferenceSchema', () => {
     test('should reject invalid test duration', () => {
       const invalidData = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '45',
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
       }
 
       expect(() => PreferenceSchema.parse(invalidData)).toThrow()
@@ -134,10 +152,11 @@ describe('PreferenceSchema', () => {
     test('should reject non-boolean showKeyboard', () => {
       const invalidData = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: 'true',
         theme: 'system' as const,
+        textType: 'words' as const,
       }
 
       expect(() => PreferenceSchema.parse(invalidData)).toThrow()
@@ -146,7 +165,7 @@ describe('PreferenceSchema', () => {
     test('should reject invalid theme', () => {
       const invalidData = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'invalid',
@@ -158,8 +177,8 @@ describe('PreferenceSchema', () => {
     test('should reject missing required fields', () => {
       const incompleteData = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
-        // missing testDuration, showKeyboard, and theme
+        keyboardLayout: 'qwerty_us' as const,
+        // missing testDuration, showKeyboard, theme, and textType
       }
 
       expect(() => PreferenceSchema.parse(incompleteData)).toThrow()
@@ -168,10 +187,11 @@ describe('PreferenceSchema', () => {
     test('should reject extra fields', () => {
       const dataWithExtra = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
         extraField: 'not allowed',
       }
 
@@ -181,7 +201,7 @@ describe('PreferenceSchema', () => {
     test('should reject null values', () => {
       const nullData = {
         language: null,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'system' as const,
@@ -193,7 +213,7 @@ describe('PreferenceSchema', () => {
     test('should reject undefined values', () => {
       const undefinedData = {
         language: undefined,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: true,
         theme: 'system' as const,
@@ -207,10 +227,11 @@ describe('PreferenceSchema', () => {
     test('should not coerce string boolean to boolean', () => {
       const stringBooleanData = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: '30' as const,
         showKeyboard: 'true',
         theme: 'system' as const,
+        textType: 'words' as const,
       }
 
       expect(() => PreferenceSchema.parse(stringBooleanData)).toThrow()
@@ -219,10 +240,11 @@ describe('PreferenceSchema', () => {
     test('should not coerce number duration to string', () => {
       const numberDurationData = {
         language: 'en' as const,
-        keyboardLayout: 'qwerty' as const,
+        keyboardLayout: 'qwerty_us' as const,
         testDuration: 30,
         showKeyboard: true,
         theme: 'system' as const,
+        textType: 'words' as const,
       }
 
       expect(() => PreferenceSchema.parse(numberDurationData)).toThrow()

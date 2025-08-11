@@ -10,10 +10,11 @@ const STORAGE_KEY = 'maxtype-preferences'
  */
 const DEFAULT_PREFERENCES: UserPreferences = {
   language: 'en',
-  keyboardLayout: 'qwerty',
+  keyboardLayout: 'qwerty_us',
   testDuration: '30',
   showKeyboard: true,
   theme: 'system',
+  textType: 'words',
 }
 
 /**
