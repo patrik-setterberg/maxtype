@@ -15,6 +15,7 @@ import { Admins } from './collections/Admins'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+import { TypingTestResults } from './collections/TypingTestResults'
 
 // Globals
 import Header from './globals/header'
@@ -29,7 +30,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Admins, Users, Media, Pages],
+  collections: [Admins, Users, Media, Pages, TypingTestResults],
   globals: [Header],
   editor: lexicalEditor(),
   email: nodemailerAdapter({
